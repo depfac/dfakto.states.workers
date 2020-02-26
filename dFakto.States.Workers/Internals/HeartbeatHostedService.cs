@@ -52,33 +52,40 @@ namespace dFakto.States.Workers.Internals
 
                 DateTime now = DateTime.Now;
 
-                List<HeartbeatTask> tasks = new List<HeartbeatTask>();
-                lock (_tasks)
+                try
                 {
-                    while (_tasks.Count > 0 && _tasks[0].NextHeartBeat < now)
+                    List<HeartbeatTask> tasks = new List<HeartbeatTask>();
+                    lock (_tasks)
                     {
-                        tasks.Add(_tasks[0]);
-                        _tasks.RemoveAt(0);
+                        while (_tasks.Count > 0 && _tasks[0].NextHeartBeat < now)
+                        {
+                            tasks.Add(_tasks[0]);
+                            _tasks.RemoveAt(0);
+                        }
+                    }
+
+                    foreach (var t in tasks)
+                    {
+                        _logger.LogDebug($"Sending Heartbeat for token '{t.TaskToken}'");
+                        var r = await _client.SendTaskHeartbeatAsync(new SendTaskHeartbeatRequest
+                        {
+                            TaskToken = t.TaskToken
+                        }, token);
+
+                        if (r.HttpStatusCode != HttpStatusCode.OK)
+                        {
+                            _logger.LogDebug($"Heartbeat received an error '{t.TaskToken}', cancelling worker");
+                            t.CancellationTokenSource.Cancel();
+                        }
+                        else
+                        {
+                            RegisterHeartbeat(t.Delay,t.TaskToken,t.CancellationTokenSource);
+                        }
                     }
                 }
-
-                foreach (var t in tasks)
+                catch (Exception e)
                 {
-                    _logger.LogDebug($"Sending Heartbeat for token '{t.TaskToken}'");
-                    var r = await _client.SendTaskHeartbeatAsync(new SendTaskHeartbeatRequest
-                    {
-                        TaskToken = t.TaskToken
-                    }, token);
-
-                    if (r.HttpStatusCode != HttpStatusCode.OK)
-                    {
-                        _logger.LogDebug($"Heartbeat received an error '{t.TaskToken}', cancelling worker");
-                        t.CancellationTokenSource.Cancel();
-                    }
-                    else
-                    {
-                        RegisterHeartbeat(t.Delay,t.TaskToken,t.CancellationTokenSource);
-                    }
+                    _logger.LogWarning(e, "Error while sending heartbeat");
                 }
             }
 
