@@ -26,7 +26,7 @@ namespace dFakto.States.Workers.Sql.MySQL
                 var bulkCopy = new MySqlBulkCopy(conn);
                 bulkCopy.BulkCopyTimeout = timeout;
                 bulkCopy.DestinationTableName = tableName;
-                bulkCopy.WriteToServer(reader);
+                await bulkCopy.WriteToServerAsync(reader, token);
             }
         }
     }
