@@ -89,6 +89,7 @@ namespace dFakto.States.Workers.Tests
                         x.AddWorker<HttpWorker>();
                         x.AddWorker<SqlQueryWorker>();
                         x.AddWorker<SqlBulkInsertWorker>();
+                        x.AddWorker<SqlInsertFromInputWorker>();
                     });
                 });
 
