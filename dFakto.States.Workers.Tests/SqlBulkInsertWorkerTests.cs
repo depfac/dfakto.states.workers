@@ -149,7 +149,7 @@ namespace dFakto.States.Workers.Tests
         private string CreateTable(BaseDatabase database)
         {
             var tableName = StringUtils.Random(10);
-            var conn = database.CreateConnection();
+            using var conn = database.CreateConnection();
             conn.Open();
             using (var cmd = conn.CreateCommand())
             {
@@ -162,51 +162,43 @@ namespace dFakto.States.Workers.Tests
 
         private void DropTable(BaseDatabase database, string tableName)
         {
-            var conn = database.CreateConnection();
+            using var conn = database.CreateConnection();
             conn.Open();
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = $"DROP TABLE {tableName}";
-                cmd.ExecuteNonQuery();
-            }
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"DROP TABLE {tableName}";
+            cmd.ExecuteNonQuery();
         }
 
         private void Insert(BaseDatabase database, string tableName, IEnumerable<(int, string )> values)
         {
-            var conn = database.CreateConnection();
+            using var conn = database.CreateConnection();
             conn.Open();
             
             foreach (var value in values)
             {
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = $"INSERT INTO {tableName} VALUES(@p1, @p2)";
-                    var p = cmd.CreateParameter();
-                    p.ParameterName = "p1";
-                    p.Value = value.Item1;
-                    cmd.Parameters.Add(p);
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"INSERT INTO {tableName} VALUES(@p1, @p2)";
+                var p = cmd.CreateParameter();
+                p.ParameterName = "p1";
+                p.Value = value.Item1;
+                cmd.Parameters.Add(p);
 
-                    var p2 = cmd.CreateParameter();
-                    p2.ParameterName = "p2";
-                    p2.Value = value.Item2;
-                    cmd.Parameters.Add(p2);
+                var p2 = cmd.CreateParameter();
+                p2.ParameterName = "p2";
+                p2.Value = value.Item2;
+                cmd.Parameters.Add(p2);
 
-                    cmd.ExecuteNonQuery();
-                }
+                cmd.ExecuteNonQuery();
             }
         }
 
         private int Count(BaseDatabase database, string tableName)
         {
-            using (var conn = database.CreateConnection())
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = $"SELECT COUNT(*) FROM {tableName}";
-                    return Convert.ToInt32(cmd.ExecuteScalar());
-                }
-            }
+            using var conn = database.CreateConnection();
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT COUNT(*) FROM {tableName}";
+            return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
 }
