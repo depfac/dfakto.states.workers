@@ -67,16 +67,15 @@ namespace dFakto.States.Workers.Sql
 
                 var pp = cmd.CreateParameter();
                 pp.ParameterName = $"@p_{index}";
-
-                var value = (JsonElement) keyValue.Value;
                 
+                var value = (JsonElement?) keyValue.Value ?? new JsonElement();
                 switch (value.ValueKind)
                 {
                     case JsonValueKind.Null:
                     case JsonValueKind.Array:
                     case JsonValueKind.Object:
                     case JsonValueKind.Undefined:
-                        pp.Value = null;
+                        pp.Value = DBNull.Value;
                         break;
                     case JsonValueKind.String:
                         pp.Value = value.GetString();
