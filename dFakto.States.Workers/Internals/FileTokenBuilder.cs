@@ -1,4 +1,6 @@
 using System;
+using System.Text.Encodings.Web;
+using System.Web;
 
 namespace dFakto.States.Workers.Internals
 {
@@ -32,8 +34,8 @@ namespace dFakto.States.Workers.Internals
 
         public string Path
         {
-            get => _builder.Path;
-            set => _builder.Path = value;
+            get => HttpUtility.UrlDecode(_builder.Path);
+            set => _builder.Path = UrlEncoder.Default.Encode(value);
         }
 
         public override string ToString()
