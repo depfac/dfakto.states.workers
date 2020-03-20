@@ -5,6 +5,7 @@ namespace dFakto.States.Workers.Sql.Common
         SqlServer,
         PostgreSql,
         MariaDb,
-        MySql
+        MySql,
+        Oracle
     }
 }

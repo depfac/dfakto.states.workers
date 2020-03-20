@@ -79,6 +79,12 @@ namespace dFakto.States.Workers.Tests
                                 Type = SqlDatabaseType.MariaDb,
                                 ConnectionString = "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"
                             },
+                            new DatabaseConfig
+                            {
+                                Name = "oracle",
+                                Type = SqlDatabaseType.Oracle,
+                                ConnectionString = "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"
+                            },
                         };
                         
                         x.AddDirectoryFileStore();

@@ -17,6 +17,7 @@
         <PackageReference Include="MySqlConnector" Version="0.62.0" />
         <PackageReference Include="Npgsql" Version="4.1.2" />
         <PackageReference Include="Microsoft.Data.SqlClient" Version="1.1.0" />
+        <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.60" />
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="Workers\Sql\SQLServer\BulkInsertWorkerInput.cs" />

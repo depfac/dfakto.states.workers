@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using dFakto.States.Workers.Sql.Common;
 using dFakto.States.Workers.Sql.MySQL;
+using dFakto.States.Workers.Sql.Oracle;
 using dFakto.States.Workers.Sql.PostgreSQL;
 using dFakto.States.Workers.Sql.SQLServer;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,10 @@ namespace dFakto.States.Workers.Sql
                         case SqlDatabaseType.MySql:
                             builder.ServiceCollection.AddSingleton<BaseDatabase>(x => 
                                 new MySqlDatabase(database));
+                            break;
+                        case SqlDatabaseType.Oracle:
+                            builder.ServiceCollection.AddSingleton<BaseDatabase>(x => 
+                                new OracleDatabase(database));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
