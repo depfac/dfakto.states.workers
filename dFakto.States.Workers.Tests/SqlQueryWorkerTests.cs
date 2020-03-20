@@ -15,13 +15,13 @@ namespace dFakto.States.Workers.Tests
         
         public SqlQueryWorkerTests()
         {
-            CreateTable();
+            CreateTable(_tableName);
         }
         
         [Fact]
         public async Task TestScalarQuery()
         {
-            Insert((1, "hello"), (2,"world"));
+            Insert(_tableName, (1, "hello"), (2,"world"));
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
@@ -40,7 +40,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task TestNonQuery()
         {
-            Insert((1, "hello"), (2,"world"));
+            Insert(_tableName, (1, "hello"), (2,"world"));
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
@@ -59,7 +59,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task TestReader_NoParams()
         {
-            Insert((1, "hello"), (2,"world"));
+            Insert(_tableName,(1, "hello"), (2,"world"));
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
@@ -82,7 +82,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task TestReader_One_Param()
         {
-            Insert((1, "hello"), (2,"world"));
+            Insert(_tableName, (1, "hello"), (2,"world"));
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
@@ -114,20 +114,7 @@ namespace dFakto.States.Workers.Tests
             DropTable();
             base.Dispose();
         }
-
-        private void CreateTable()
-        {
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
-            {
-                var conn = database.CreateConnection();
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = $"CREATE TABLE {_tableName} (col1 INT , col2 VARCHAR(100))";
-                    cmd.ExecuteNonQuery();
-                }
-            }
-        }
+        
         
         private void DropTable()
         {
@@ -143,33 +130,7 @@ namespace dFakto.States.Workers.Tests
             }
         }
         
-        private void Insert(params (int,string)[] values)
-        {
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
-            {
-                foreach (var value in values)
-                {
-                    var conn = database.CreateConnection();
-                    conn.Open();
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = $"INSERT INTO {_tableName} VALUES(@p1, @p2)";
-                        var p = cmd.CreateParameter();
-                        p.ParameterName = "p1";
-                        p.Value = value.Item1;
-                        cmd.Parameters.Add(p);
-                        
-                        var p2 = cmd.CreateParameter();
-                        p2.ParameterName = "p2";
-                        p2.Value = value.Item2;
-                        cmd.Parameters.Add(p2);
-
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-
-            }
-        }
+        
 
         private int Count(BaseDatabase database)
         {

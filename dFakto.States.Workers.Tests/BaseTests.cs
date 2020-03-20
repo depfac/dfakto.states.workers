@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using dFakto.States.Workers.Config;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.FileStores.File;
 using dFakto.States.Workers.FileStores.Ftp;
+using dFakto.States.Workers.Interfaces;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace dFakto.States.Workers.Tests
@@ -101,11 +105,61 @@ namespace dFakto.States.Workers.Tests
 
             return builder.Build();
         }
+        
+        protected void CreateTable(string tableName)
+        {
+            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            {
+                var conn = database.CreateConnection();
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = $"CREATE TABLE {tableName} (col1 INT , col2 VARCHAR(100))";
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        
+        protected void Insert(string tableName, params (int,string)[] values)
+        {
+            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            {
+                foreach (var value in values)
+                {
+                    var conn = database.CreateConnection();
+                    conn.Open();
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = $"INSERT INTO {tableName} VALUES(@p1, @p2)";
+                        var p = cmd.CreateParameter();
+                        p.ParameterName = "p1";
+                        p.Value = value.Item1;
+                        cmd.Parameters.Add(p);
+                        
+                        var p2 = cmd.CreateParameter();
+                        p2.ParameterName = "p2";
+                        p2.Value = value.Item2;
+                        cmd.Parameters.Add(p2);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+            }
+        }
+        
+        public async Task<string> ReadTextFileInStore(IFileStore fileStore, string fileToken)
+        {
+            await using var stream = await fileStore.OpenRead(fileToken);
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            return reader.ReadToEnd();
+        }
 
         public virtual void Dispose()
         {
             Host?.Dispose();
             Directory.CreateDirectory(_path);
         }
+        
     }
 }

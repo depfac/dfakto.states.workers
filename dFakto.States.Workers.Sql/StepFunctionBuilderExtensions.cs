@@ -46,6 +46,7 @@ namespace dFakto.States.Workers.Sql
 
             builder.AddWorker<SqlQueryWorker>();
             builder.AddWorker<SqlBulkInsertWorker>();
+            builder.AddWorker<SqlExportToCsvWorker>();
             return builder;
         }
     }
