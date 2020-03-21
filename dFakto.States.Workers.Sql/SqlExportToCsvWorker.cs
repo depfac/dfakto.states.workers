@@ -47,7 +47,6 @@ namespace dFakto.States.Workers.Sql
             
             using var reader = await ExecuteQuery(input, connection, token);
             var (writer, outputFileToken) = await GetOutputWriterStream(input);
-            
             WriteToCsv(reader, writer);
             writer.Dispose();
             
@@ -76,6 +75,7 @@ namespace dFakto.States.Workers.Sql
             string outputFileToken = await outputFileStore.CreateFileToken(outputFileName);
             
             var streamWriter = await outputFileStore.OpenWrite(outputFileToken);
+            streamWriter.Flush();
             return (new CsvStreamWriter(new StreamWriter(streamWriter), input.Separator) {ForceQuotes = true}, outputFileToken);
         }
 
