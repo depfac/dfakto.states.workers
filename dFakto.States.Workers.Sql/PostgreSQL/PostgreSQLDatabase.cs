@@ -56,7 +56,7 @@ namespace dFakto.States.Workers.Sql.PostgreSQL
                     builder.Append(",");
 
                 builder.Append("\"");
-                builder.Append(reader.GetValue(i).ToString().Replace("\"","\\\""));
+                builder.Append(reader.GetValue(i).ToString().Replace("\"","\"\""));
                 builder.Append("\"");
             }
             
