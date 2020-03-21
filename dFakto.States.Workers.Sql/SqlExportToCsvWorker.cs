@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,10 +47,17 @@ namespace dFakto.States.Workers.Sql
             await OpenConnection(connection, token);
             
             using var reader = await ExecuteQuery(input, connection, token);
-            var (writer, outputFileToken) = await GetOutputWriterStream(input);
-            WriteToCsv(reader, writer);
-            writer.Dispose();
             
+            using var outputFileStore = _fileStoreFactory.GetFileStoreFromName(input.OutputFileStoreName);
+            string outputFileName = GetOutputFileCsvName(input.OutputFileName);
+            string outputFileToken = await outputFileStore.CreateFileToken(outputFileName);
+            
+            using (var streamWriter = await outputFileStore.OpenWrite(outputFileToken))
+            using (var writerTmp = new StreamWriter(streamWriter))
+            {
+                var writer = new CsvStreamWriter(writerTmp, input.Separator) {ForceQuotes = true};
+                WriteToCsv(reader, writer);
+            }
             return outputFileToken;
         }
 
@@ -60,25 +68,12 @@ namespace dFakto.States.Workers.Sql
         }
         private async Task<DbDataReader> ExecuteQuery(SqlExportToCsvInput input, DbConnection connection, CancellationToken token)
         {
-            
             SqlQuery query = await RetrieveQuery(input);
 
             DbCommand command = connection.CreateCommand(query);
             var reader = await command.ExecuteReaderAsync(token);
             return reader;
         }
-
-        private async Task<(CsvStreamWriter writer, string outputFileToken)> GetOutputWriterStream(SqlExportToCsvInput input)
-        {
-            using var outputFileStore = _fileStoreFactory.GetFileStoreFromName(input.OutputFileStoreName);
-            string outputFileName = GetOutputFileCsvName(input.OutputFileName);
-            string outputFileToken = await outputFileStore.CreateFileToken(outputFileName);
-            
-            var streamWriter = await outputFileStore.OpenWrite(outputFileToken);
-            streamWriter.Flush();
-            return (new CsvStreamWriter(new StreamWriter(streamWriter), input.Separator) {ForceQuotes = true}, outputFileToken);
-        }
-
         private void WriteToCsv(DbDataReader reader, CsvStreamWriter writer)
         {
             var columnNames = GetColumnNames(reader);
@@ -95,7 +90,24 @@ namespace dFakto.States.Workers.Sql
             string[] toReturn = new string[reader.FieldCount];
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                toReturn[i] = reader.GetValue(i).ToString();
+                if (reader.IsDBNull(i))
+                {
+                    toReturn[i] = null;
+                    continue;
+                }
+                var val = reader.GetValue(i);
+                switch (val)
+                {
+                    case decimal v:
+                        toReturn[i] = v.ToString(CultureInfo.InvariantCulture);
+                        break;
+                    case DateTime v:
+                        toReturn[i] = v.ToString("O");
+                        break;
+                    default:
+                        toReturn[i] = val.ToString();
+                        break;
+                }
             }
             return toReturn;
         }
