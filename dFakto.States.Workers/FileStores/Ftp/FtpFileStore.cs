@@ -2,10 +2,13 @@
 using System.IO;
 using System.Net;
 using System.Security.Authentication;
+using System.Threading;
 using System.Threading.Tasks;
+using CoreFtp;
 using dFakto.States.Workers.Interfaces;
 using dFakto.States.Workers.Internals;
 using FluentFTP;
+using FtpClient = FluentFTP.FtpClient;
 
 namespace dFakto.States.Workers.FileStores.Ftp
 {
@@ -14,7 +17,7 @@ namespace dFakto.States.Workers.FileStores.Ftp
         public string HostName { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public FtpEncryptionMode Encryption { get; set; }
+        public string Encryption { get; set; }
         public SslProtocols SslProtocols { get; set; }
     }
     
@@ -23,11 +26,19 @@ namespace dFakto.States.Workers.FileStores.Ftp
         private readonly string _fileStoreName;
         private readonly FtpFileStoreConfig _config;
         public const string TYPE = "ftp";
+        private readonly CoreFtp.FtpClient _client;
 
         public FtpFileStore(string fileStoreName, FtpFileStoreConfig config)
         {
             _fileStoreName = fileStoreName;
             _config = config;
+            _client = new CoreFtp.FtpClient(new FtpClientConfiguration
+            {
+                Host = config.HostName,
+                Username = config.Username,
+                Password = config.Password
+            });
+            _client.LoginAsync().Wait();
         }
 
         public Task<string> CreateFileToken(string fileName)
@@ -57,22 +68,23 @@ namespace dFakto.States.Workers.FileStores.Ftp
                 client.CreateDirectory(dir);
             }
 
-            return new FtpStream(client,await client.OpenReadAsync(fileToken.Path));
+            return await _client.OpenFileReadStreamAsync(fileToken.Path);
         }
 
         public async Task<Stream> OpenWrite(string token)
         {
-            var fileToken = FileToken.Parse(token,_fileStoreName);
 
+            var fileToken = FileToken.Parse(token,_fileStoreName);
+            
             string dir = fileToken.Path.GetFtpDirectoryName();
             var client = GetNewClient();
-
+            
             if (!await client.DirectoryExistsAsync(dir))
             {
                 await client.CreateDirectoryAsync(dir);
             }
-
-            return new FtpStream(client,await client.OpenWriteAsync(fileToken.Path));
+            
+            return await _client.OpenFileWriteStreamAsync(fileToken.Path);
         }
 
         public async Task Delete(string fileToken)
@@ -103,7 +115,6 @@ namespace dFakto.States.Workers.FileStores.Ftp
             _ftpClient.Credentials = _config.Username == null ? 
                 new NetworkCredential() : 
                 new NetworkCredential(_config.Username, _config.Password);
-            _ftpClient.EncryptionMode = _config.Encryption;
             _ftpClient.SslProtocols = _config.SslProtocols;
             _ftpClient.DataConnectionEncryption = _ftpClient.EncryptionMode != FtpEncryptionMode.None;
             _ftpClient.Connect();

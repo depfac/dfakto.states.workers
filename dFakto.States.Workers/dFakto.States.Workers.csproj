@@ -15,7 +15,8 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.StepFunctions" Version="3.3.103.15" />
-        <PackageReference Include="FluentFTP" Version="29.0.2" />
+        <PackageReference Include="CoreFtp" Version="1.4.0" />
+        <PackageReference Include="FluentFTP" Version="32.2.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
