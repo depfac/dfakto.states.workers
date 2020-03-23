@@ -54,6 +54,16 @@ namespace dFakto.States.Workers.Sql
                     throw new ArgumentException("Invalid Source ConnectionName");
                 }
                 
+                if (input.Source.Query.QueryFileToken != null)
+                {
+                    using(var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.Source.Query.QueryFileToken))
+                    using(Stream stream = await fileStore.OpenRead(input.Source.Query.QueryFileToken))
+                    using(StreamReader reader = new StreamReader(stream))
+                    {
+                        input.Source.Query.Query = reader.ReadToEnd();
+                    }
+                }
+                
                 sourceConnection = sourceDatabase.CreateConnection();
                 await sourceConnection.OpenAsync(token);
                 sourceCommand = sourceConnection.CreateCommand(input.Source.Query);
