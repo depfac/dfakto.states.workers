@@ -34,8 +34,8 @@ namespace dFakto.States.Workers.Internals
 
         public string Path
         {
-            get => HttpUtility.UrlDecode(_builder.Path);
-            set => _builder.Path = UrlEncoder.Default.Encode(value);
+            get => _builder.Path.Substring(1);
+            set => _builder.Path = value;
         }
 
         public override string ToString()

@@ -22,11 +22,8 @@ namespace dFakto.States.Workers.FileStores.File
         
         public Task<string> CreateFileToken(string fileName)
         {
-            var now = DateTime.UtcNow;
-            
             FileToken token = new FileToken(TYPE,_fileStoreName);
-            token.Path = Path.Combine(_basePath, now.Year.ToString(), now.Month.ToString("00"), now.Day.ToString("00"),
-                fileName);
+            token.Path = fileName;
             
             return Task.FromResult(token.ToString());
         }
@@ -34,7 +31,6 @@ namespace dFakto.States.Workers.FileStores.File
         public Task<string> GetFileName(string fileToken)
         {
             var token = FileToken.Parse(fileToken,_fileStoreName);
-            
             return Task.FromResult(Path.GetFileName(token.Path));
         }
 
@@ -44,15 +40,13 @@ namespace dFakto.States.Workers.FileStores.File
             
             if(!await Exists(token))
                 throw new FileNotFoundException();
-            
-            return new FileStream(token.Path, FileMode.Open);
+
+            return new FileStream(GetAbsolutePath(FileToken.Parse(fileToken, _fileStoreName)), FileMode.Open);
         }
 
         public Task<Stream> OpenWrite(string token)
         {
-            var fileToken = FileToken.Parse(token,_fileStoreName);
-
-            string localPath = fileToken.Path;
+            string localPath = GetAbsolutePath(FileToken.Parse(token, _fileStoreName));
             string dir = Path.GetDirectoryName(localPath);
             if (!Directory.Exists(dir))
             {
@@ -64,10 +58,10 @@ namespace dFakto.States.Workers.FileStores.File
         
         public Task Delete(string fileToken)
         {
-            var token = FileToken.Parse(fileToken,_fileStoreName);
-            if (System.IO.File.Exists(token.Path))
+            var absolutePath = GetAbsolutePath(FileToken.Parse(fileToken, _fileStoreName));
+            if (System.IO.File.Exists(absolutePath))
             {
-                System.IO.File.Delete(token.Path);
+                System.IO.File.Delete(absolutePath);
             }
             return Task.CompletedTask;
         }
@@ -79,7 +73,12 @@ namespace dFakto.States.Workers.FileStores.File
         
         private Task<bool> Exists(FileToken fileToken)
         {
-            return Task.FromResult(System.IO.File.Exists(fileToken.Path));
+            return Task.FromResult(System.IO.File.Exists(GetAbsolutePath(fileToken)));
+        }
+
+        private string GetAbsolutePath(FileToken token)
+        {
+            return Path.Combine(_basePath, token.Path);
         }
 
         public void Dispose()
