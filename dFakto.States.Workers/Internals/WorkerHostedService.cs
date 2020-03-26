@@ -14,7 +14,7 @@ namespace dFakto.States.Workers.Internals
     {
         private readonly IHeartbeatManager _heartbeatManager;
         private readonly ILogger<WorkerHostedService> _logger;
-        private int _runningTasks = 0;
+        private long _runningTasks = 0;
 
         internal WorkerHostedService(IWorker worker,
             IHeartbeatManager heartbeatManager,
@@ -76,7 +76,8 @@ namespace dFakto.States.Workers.Internals
                         }
 
                         // 3) Wait for a task
-                        string workerName = $"{activityName}-{_runningTasks:0000}";
+                        var workerName = GetWorkerName(activityName);
+
                         _logger.LogDebug($"Waiting for a job on activity '{activityArn}' ({workerName})");
                         var activityTask = await Client.GetActivityTaskAsync(new GetActivityTaskRequest
                             {
@@ -125,6 +126,18 @@ namespace dFakto.States.Workers.Internals
 
             _logger.LogDebug($"Listening on Activity '{activityName}' stopped");
         }
+
+        private string GetWorkerName(string activityName)
+        {
+            string workerName = $"{Environment.MachineName}-{activityName}-{_runningTasks:0000}";
+            if (workerName.Length > 80)
+            {
+                workerName = workerName.Substring(workerName.Length - 80);
+            }
+
+            return workerName;
+        }
+
         private async Task TaskCompleted(Task<string> output, string taskToken)
         {
             // 7) Unregister Heartbeat
