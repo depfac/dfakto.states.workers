@@ -9,15 +9,16 @@ namespace dFakto.States.Workers
     {
         private readonly Func<string, Task<string>> _func;
 
-        public FuncWorker(string name, Func<string, Task<string>> func)
+        public FuncWorker(string name, Func<string, Task<string>> func, int maxConcurrency = 1)
         {
             _func = func;
             ActivityName = name;
+            MaxConcurrency = maxConcurrency;
         }
 
         public string ActivityName { get; }
         public TimeSpan HeartbeatDelay => TimeSpan.MaxValue;
-        public int MaxConcurrency => 1;
+        public int MaxConcurrency { get; }
 
         public async Task<string> DoRawJsonWorkAsync(string input, CancellationToken token)
         {

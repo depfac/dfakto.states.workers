@@ -52,10 +52,10 @@ namespace dFakto.States.Workers
             return this;
         }
 
-        public StepFunctionsBuilder AddWorker(string name, Func<string, Task<string>> worker)
+        public StepFunctionsBuilder AddWorker(string name, Func<string, Task<string>> worker, int maxConcurrency = 1)
         {
             ServiceCollection.AddSingleton<IHostedService>(x => new WorkerHostedService(
-                new FuncWorker(name, worker),
+                new FuncWorker(name, worker, maxConcurrency),
                 x.GetService<IHeartbeatManager>(),
                 x.GetService<StepFunctionsConfig>(), 
                 x.GetService<AmazonStepFunctionsClient>(),
