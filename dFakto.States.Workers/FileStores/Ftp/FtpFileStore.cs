@@ -63,9 +63,9 @@ namespace dFakto.States.Workers.FileStores.Ftp
             
             var client = GetNewClient();
             string dir = fileToken.Path.GetFtpDirectoryName();
-            if (!client.DirectoryExists(dir))
+            if (!await client.DirectoryExistsAsync(dir))
             {
-                client.CreateDirectory(dir);
+                await client.CreateDirectoryAsync(dir);
             }
 
             return await _client.OpenFileReadStreamAsync(fileToken.Path);
