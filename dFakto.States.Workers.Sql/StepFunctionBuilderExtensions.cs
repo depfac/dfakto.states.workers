@@ -15,32 +15,22 @@ namespace dFakto.States.Workers.Sql
     {
         public static StepFunctionsBuilder AddSqlWorkers(this StepFunctionsBuilder builder, IEnumerable<DatabaseConfig> databases)
         {
+            builder.ServiceCollection.AddTransient<SqlServerBaseDatabase>();
+            builder.ServiceCollection.AddTransient<OracleDatabase>();
+            builder.ServiceCollection.AddTransient<MySqlDatabase>();
+            builder.ServiceCollection.AddTransient<PostgreSqlBaseDatabase>();
+            
             if (databases != null)
             {
+
                 foreach (var database in databases)
                 {
-                    switch (database.Type)
+                    builder.ServiceCollection.AddSingleton<BaseDatabase>(x =>
                     {
-                        case SqlDatabaseType.SqlServer:
-                            builder.ServiceCollection.AddSingleton<BaseDatabase>(x =>
-                                new SqlServerBaseDatabase(database));
-                            break;
-                        case SqlDatabaseType.PostgreSql:
-                            builder.ServiceCollection.AddSingleton<BaseDatabase>(x =>
-                                new PostgreSqlBaseDatabase(database));
-                            break;
-                        case SqlDatabaseType.MariaDb:
-                        case SqlDatabaseType.MySql:
-                            builder.ServiceCollection.AddSingleton<BaseDatabase>(x => 
-                                new MySqlDatabase(database));
-                            break;
-                        case SqlDatabaseType.Oracle:
-                            builder.ServiceCollection.AddSingleton<BaseDatabase>(x => 
-                                new OracleDatabase(database));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                        BaseDatabase db = (BaseDatabase) x.GetService(Type.GetType(database.Type));
+                        db.Config = database;
+                        return db;
+                    });
                 }
             }
 

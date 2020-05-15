@@ -11,12 +11,6 @@ namespace dFakto.States.Workers.Sql.PostgreSQL
 {
     internal class PostgreSqlBaseDatabase : BaseDatabase
     {
-
-        public PostgreSqlBaseDatabase(DatabaseConfig config)
-        :base(config)
-        {
-        }
-
         public override DbConnection CreateConnection()
         {
             return new NpgsqlConnection(Config.ConnectionString);

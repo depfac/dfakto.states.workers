@@ -9,10 +9,6 @@ namespace dFakto.States.Workers.Sql.MySQL
 {
     public class MySqlDatabase : BaseDatabase
     {
-        public MySqlDatabase(DatabaseConfig config) : base(config)
-        {
-        }
-
         public override DbConnection CreateConnection()
         {
             //MySQL Server, the connection string must have AllowLoadLocalInfile=true

@@ -67,26 +67,25 @@ namespace dFakto.States.Workers.Tests
                             new DatabaseConfig
                             {
                                 Name = "pgsql",
-                                Type = SqlDatabaseType.PostgreSql,
-                                ConnectionString =
-                                    "server=localhost; user id=postgres; password=depfac$2000; database=test"
+                                Type = "dFakto.States.Workers.Sql.PostgreSQL.PostgreSqlBaseDatabase, dFakto.States.Workers.Sql",
+                                ConnectionString = "server=localhost; user id=postgres; password=depfac$2000; database=test"
                             },
                             new DatabaseConfig
                             {
                                 Name = "sqlserver",
-                                Type = SqlDatabaseType.SqlServer,
+                                Type = "dFakto.States.Workers.Sql.SQLServer.SqlServerBaseDatabase, dFakto.States.Workers.Sql",
                                 ConnectionString = "server=localhost; user id=sa; password=depfac$2000; database=test"
                             },
                             new DatabaseConfig
                             {
                                 Name = "mariadb",
-                                Type = SqlDatabaseType.MariaDb,
+                                Type = "dFakto.States.Workers.Sql.MySQL.MySqlDatabase, dFakto.States.Workers.Sql",
                                 ConnectionString = "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"
                             },
                             new DatabaseConfig
                             {
                                 Name = "oracle",
-                                Type = SqlDatabaseType.Oracle,
+                                Type = "dFakto.States.Workers.Sql.Oracle.OracleDatabase, dFakto.States.Workers.Sql",
                                 ConnectionString = "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"
                             },
                         };

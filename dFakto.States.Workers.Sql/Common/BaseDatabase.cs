@@ -6,16 +6,11 @@ using System.Threading.Tasks;
 namespace dFakto.States.Workers.Sql.Common
 {
     public abstract class BaseDatabase
-    {        
-        protected readonly DatabaseConfig Config;
-
-        protected BaseDatabase(DatabaseConfig config)
-        {
-            Config = config;
-        }
-
+    {
         public string Name => Config.Name;
-        
+
+        public DatabaseConfig Config { get; set; }
+
         public abstract DbConnection CreateConnection();
 
         public async Task TruncateTable(string schemaName, string tableName)

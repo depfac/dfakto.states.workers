@@ -9,11 +9,6 @@ namespace dFakto.States.Workers.Sql.SQLServer
 {
     internal class SqlServerBaseDatabase : BaseDatabase
     {
-        public SqlServerBaseDatabase(DatabaseConfig config)
-            :base(config)
-        {
-        }
-
         public override DbConnection CreateConnection()
         {
             return new SqlConnection(Config.ConnectionString);

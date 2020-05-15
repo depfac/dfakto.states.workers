@@ -9,10 +9,6 @@ namespace dFakto.States.Workers.Sql.Oracle
 {
     public class OracleDatabase : BaseDatabase
     {
-        public OracleDatabase(DatabaseConfig config) : base(config)
-        {
-        }
-
         public override DbConnection CreateConnection()
         {
             return new OracleConnection(Config.ConnectionString);
