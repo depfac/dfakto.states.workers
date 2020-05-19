@@ -1,27 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Config;
 using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.FileStores.Ftp;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.TestsHost
 {
-    internal class Program
+    internal static class Program
     {
-        private static async Task Main(string[] args)
+        private static void Main(string[] args)
         {
             AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
 
-            var builder = new HostBuilder()
+            bool isService = !(Debugger.IsAttached || (args != null && args.Contains("--console")));
+
+            if (isService)
+            {
+                string pathToExe = Process.GetCurrentProcess().MainModule?.FileName;
+                string pathToContentRoot = Path.GetDirectoryName(pathToExe);
+                Directory.SetCurrentDirectory(pathToContentRoot);
+            }
+
+            var builder = WebHost.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile("appsettings.json", true);
@@ -30,39 +41,26 @@ namespace dFakto.States.Workers.TestsHost
 
                     if (args != null)
                     {
-                        config.AddCommandLine(args);
+                        config.AddCommandLine(args.Where(arg => arg != "--console").ToArray());
                     }
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddOptions();
-                    services.AddStepFunctions(
-                        hostContext.Configuration.GetSection("stepFunctions").Get<StepFunctionsConfig>(),
-                    hostContext.Configuration.GetSection("fileStores").Get<FileStoreFactoryConfig>(), x =>
-                        {
-                            x.Config.EnvironmentName = hostContext.HostingEnvironment.EnvironmentName;
-
-                            x.AddFtpFileStore();
-                            x.AddDirectoryFileStore();
-                            
-                            x.AddSqlWorkers(hostContext.Configuration.GetSection("databases")
-                                .Get<IEnumerable<DatabaseConfig>>());
-
-                            //x.AddWorkers(Assembly.GetExecutingAssembly());
-                            x.AddWorker<HttpWorker>();
-                            x.AddWorker<GZipWorker>();
-                            x.AddWorker("Dummy", Task.FromResult);
-                            x.AddWorker("Hello", s => Task.FromResult($"Hello {s}!"));
-                        });
                 })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.SetMinimumLevel(LogLevel.Debug);
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
-                }).Build();
-            
-            await builder.RunAsync();
+                })
+                .UseStartup<Startup>();
+                
+            var host = builder.Build();
+            if (isService)
+            {
+                host.RunAsService();
+            }
+            else
+            {
+                host.Run();
+            }
         }
     }
 }
