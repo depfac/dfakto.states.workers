@@ -33,8 +33,11 @@ namespace dFakto.States.Workers.TestsHost
                 Configuration.GetSection("stepFunctions").Get<StepFunctionsConfig>(),
             Configuration.GetSection("fileStores").Get<FileStoreFactoryConfig>(), x =>
             {
-                x.Config.EnvironmentName = _env.EnvironmentName;
-
+                if (string.IsNullOrWhiteSpace(x.Config.EnvironmentName))
+                {
+                    x.Config.EnvironmentName = _env.EnvironmentName;
+                }
+                
                 x.AddFtpFileStore();
                 x.AddDirectoryFileStore();
 
