@@ -22,15 +22,22 @@ namespace dFakto.States.Workers.Sql
             
             if (databases != null)
             {
-
                 foreach (var database in databases)
                 {
-                    builder.ServiceCollection.AddSingleton<BaseDatabase>(x =>
+                    try
                     {
-                        BaseDatabase db = (BaseDatabase) x.GetService(Type.GetType(database.Type));
-                        db.Config = database;
-                        return db;
-                    });
+                        builder.ServiceCollection.AddSingleton<BaseDatabase>(x =>
+                        {
+                            var t = Type.GetType(database.Type);
+                            BaseDatabase db = (BaseDatabase) x.GetService(t);
+                            db.Config = database;
+                            return db;
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error while loading database '{database.Name}' type '{database.Type}'");
+                    }
                 }
             }
 
