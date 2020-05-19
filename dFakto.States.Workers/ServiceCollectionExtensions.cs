@@ -4,9 +4,7 @@ using Amazon.Runtime;
 using Amazon.StepFunctions;
 using dFakto.States.Workers.Config;
 using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.Interfaces;
 using dFakto.States.Workers.Internals;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -18,7 +16,7 @@ namespace dFakto.States.Workers
             StepFunctionsConfig stepFunctionsConfig,
             FileStoreFactoryConfig fileStoreFactoryConfig,
             Action<StepFunctionsBuilder> builder)
-        {;
+        {
             var sfb = new StepFunctionsBuilder(services, stepFunctionsConfig, fileStoreFactoryConfig);
             builder(sfb);
             services.AddSingleton<HeartbeatHostedService>();

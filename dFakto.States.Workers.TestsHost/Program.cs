@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using dFakto.States.Workers.Config;
-using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.Sql;
-using dFakto.States.Workers.Sql.Common;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.TestsHost
