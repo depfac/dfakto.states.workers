@@ -50,6 +50,7 @@ namespace dFakto.States.Workers.TestsHost
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddConsole();
                 })
+                .UseSentry()
                 .UseStartup<Startup>();
                 
             var host = builder.Build();
