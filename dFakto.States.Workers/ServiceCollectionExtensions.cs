@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.StepFunctions;
@@ -12,6 +13,29 @@ namespace dFakto.States.Workers
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// HttpCiientFactory that disable SSL certificate check (use with self-signed certificates) 
+        /// </summary>
+        private class NoCertificateCheckHttpClientFactory : HttpClientFactory
+        {
+            private readonly HttpClientHandler _handler = new HttpClientHandler();
+
+            public NoCertificateCheckHttpClientFactory()
+            {
+                _handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            }
+            
+            public override HttpClient CreateHttpClient(IClientConfig clientConfig)
+            {
+                return new HttpClient(_handler);
+            }
+
+            public override bool DisposeHttpClientsAfterUse(IClientConfig clientConfig)
+            {
+                return true;
+            }
+        }
+        
         public static IServiceCollection AddStepFunctions(this IServiceCollection services,
             StepFunctionsConfig stepFunctionsConfig,
             FileStoreFactoryConfig fileStoreFactoryConfig,
@@ -50,6 +74,11 @@ namespace dFakto.States.Workers
             if (!string.IsNullOrEmpty(config.ServiceUrl))
             {
                 stepFunctionEnvironmentConfig.ServiceURL = config.ServiceUrl;
+                if (config.IgnoreSelfSignedCertificates)
+                {
+                    stepFunctionEnvironmentConfig.HttpClientFactory = new NoCertificateCheckHttpClientFactory();
+                }
+                    
             }
 
             return new AmazonStepFunctionsClient(credentials, stepFunctionEnvironmentConfig);
