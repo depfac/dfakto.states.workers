@@ -31,11 +31,6 @@ namespace dFakto.States.Workers
             {
                 return new HttpClient(_handler);
             }
-
-            public override bool DisposeHttpClientsAfterUse(IClientConfig clientConfig)
-            {
-                return true;
-            }
         }
         
         public static IServiceCollection AddStepFunctions(this IServiceCollection services,
@@ -78,6 +73,7 @@ namespace dFakto.States.Workers
                 stepFunctionEnvironmentConfig.ServiceURL = config.ServiceUrl;
                 if (config.IgnoreSelfSignedCertificates)
                 {
+                    Console.WriteLine("/// Using NoCertificateCheckHttpClientFactory ///");
                     stepFunctionEnvironmentConfig.HttpClientFactory = new NoCertificateCheckHttpClientFactory();
                 }
                     

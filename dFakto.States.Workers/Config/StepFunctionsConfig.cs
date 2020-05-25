@@ -8,7 +8,6 @@
         public string AwsRegion { get; set; }
         public string EnvironmentName { get; set; }
         public int RegisterRetryDelay { get; set; } = 5;
-        
         public bool IgnoreSelfSignedCertificates { get; set; }
     }
 }
