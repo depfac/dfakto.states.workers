@@ -62,7 +62,7 @@ namespace dFakto.States.Workers.Internals
 
             if (!string.Equals(val.Host, expectedName, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new Exception("Unexpected FileTOken name");
+                throw new Exception("Unexpected FileToken name");
             }
             
             var token = new FileToken(val.Scheme, val.Host);
