@@ -38,7 +38,7 @@ namespace dFakto.States.Workers.Sql
             var database = _databases.FirstOrDefault(x => x.Name == input.ConnectionName);
             if (database == null)
             {
-                throw new ArgumentException("Invalid ConnectionName");
+                throw new ArgumentException($"Invalid ConnectionName '{input.ConnectionName}'");
             }
 
             _logger.LogInformation($"Inserting values from input into {input.ConnectionName}:{input.SchemaName}.{input.TableName}");
