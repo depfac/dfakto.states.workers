@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.Logging;
+using Npgsql;
+using NpgsqlTypes;
 
 namespace dFakto.States.Workers.Sql
 {
@@ -78,11 +80,19 @@ namespace dFakto.States.Workers.Sql
             
             foreach (var keyValue in  input.Json.EnumerateArray())
             {
+                cmd.Parameters.Clear();
+                
                 if (!string.IsNullOrEmpty(input.JsonColumn))
                 {
                     var jsonP = cmd.CreateParameter();
-                    jsonP.ParameterName = "@json";
-                    jsonP.Value = input.Json.ToString();
+                    jsonP.ParameterName = "@js";
+                    jsonP.Value = keyValue.ToString();
+
+                    if (jsonP is NpgsqlParameter p)
+                    {
+                        p.NpgsqlDbType = NpgsqlDbType.Jsonb;
+                    }
+                    
                     cmd.Parameters.Add(jsonP);
                 }
                 
@@ -159,7 +169,7 @@ namespace dFakto.States.Workers.Sql
             query.Append(") VALUES (");
             if (!string.IsNullOrEmpty(input.JsonColumn))
             {
-                query.Append("@json");
+                query.Append("@js");
             }
 
             for (int i = 0; i < input.Columns.Count; i++)
