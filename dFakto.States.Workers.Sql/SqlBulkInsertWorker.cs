@@ -30,6 +30,8 @@ namespace dFakto.States.Workers.Sql
 
         public override async Task<bool> DoWorkAsync(BulkInsertInput input, CancellationToken token)
         {
+            string tmpFileName = null;
+            
             var destinationDatabase = _databases.FirstOrDefault(x => x.Name == input.Destination.ConnectionName);
             if (destinationDatabase == null)
             {
@@ -60,7 +62,7 @@ namespace dFakto.States.Workers.Sql
                     using(Stream stream = await fileStore.OpenRead(input.Source.Query.QueryFileToken))
                     using(StreamReader reader = new StreamReader(stream))
                     {
-                        input.Source.Query.Query = reader.ReadToEnd();
+                        input.Source.Query.Query = await reader.ReadToEndAsync();
                     }
                 }
                 
@@ -72,7 +74,7 @@ namespace dFakto.States.Workers.Sql
             else if(input.Source.FileToken != null)
             {
                 using var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.Source.FileToken);
-                string tmpFileName = Path.GetTempFileName();
+                tmpFileName = Path.GetTempFileName();
                 
                 _logger.LogDebug($"Copying filetoken '{input.Source.FileToken}' into '{tmpFileName}'");
                 using (var reader = await fileStore.OpenRead(input.Source.FileToken))
@@ -111,12 +113,25 @@ namespace dFakto.States.Workers.Sql
                     token);
                 
                 _logger.LogDebug("BulkInsert completed");
+
             }
             finally
             {
                 dataReader?.Dispose();
                 sourceCommand?.Dispose();
                 sourceConnection?.Dispose();
+            }
+            
+            if (!String.IsNullOrEmpty(tmpFileName))
+            {
+                try
+                {
+                    File.Delete(input.Source.FileName);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e,"Error while deleting Temp File Name");
+                }
             }
             
             return true;
