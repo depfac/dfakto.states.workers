@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.Util.Internal;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -23,6 +25,8 @@ namespace dFakto.States.Workers
         public string OutputFileStoreName { get; set; }
         public int Timeout { get; set; } = 60;
         public bool FailIfError { get; set; } = true;
+        
+        public Dictionary<string,string> AdditionalHeaders { get; set; }
     }
 
     public class HttpWorkerOutput
@@ -58,12 +62,7 @@ namespace dFakto.States.Workers
                 var requestContent = await GetRequestContent(workerInput);
 
                 _logger.LogDebug("Sending HTTP request");
-                using(HttpRequestMessage request = new HttpRequestMessage
-                    {
-                        RequestUri = workerInput.Uri,
-                        Method = new HttpMethod(workerInput.Method),
-                        Content = requestContent
-                    })
+                using(HttpRequestMessage request = CreateHttpRequest(workerInput, requestContent))
                 using (var response = await client.SendAsync(request, token))
                 {
                     _logger.LogInformation($"Response received : {response.StatusCode} - {response.ReasonPhrase}");
@@ -107,6 +106,26 @@ namespace dFakto.States.Workers
                     return result;
                 }
             }
+        }
+
+        private static HttpRequestMessage CreateHttpRequest(HttpWorkerInput workerInput, HttpContent requestContent)
+        {
+            var request =  new HttpRequestMessage
+            {
+                RequestUri = workerInput.Uri,
+                Method = new HttpMethod(workerInput.Method),
+                Content = requestContent,
+            };
+
+            if (workerInput.AdditionalHeaders != null)
+            {
+                foreach (var header in workerInput.AdditionalHeaders)
+                {
+                    request.Headers.Add(header.Key,header.Value);
+                }
+            }
+
+            return request;
         }
 
         private static string GetOutputFileName(HttpWorkerInput workerInput, HttpResponseMessage response)

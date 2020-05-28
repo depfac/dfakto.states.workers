@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,7 @@ using System.Transactions;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace dFakto.States.Workers.Tests
@@ -139,6 +141,29 @@ namespace dFakto.States.Workers.Tests
 
             Assert.Equal(HttpStatusCode.NotFound,response.StatusCode);
             Assert.Null(response.ContentFileToken);
+        }
+        
+        [Fact]
+        public async Task TestAdditionalHttpHeaders()
+        {
+            HttpWorker worker = Host.Services.GetService<HttpWorker>();
+            var response = await worker.DoJsonWork<HttpWorkerInput,HttpWorkerOutput>(new HttpWorkerInput
+            {
+                Method = "GET",
+                Uri = new Uri("https://postman-echo.com/headers"),
+                OutputFileStoreName = "test",
+                OutputContentFileName = "test.json",
+                AdditionalHeaders = new Dictionary<string, string>()
+                {
+                    {"apikey","SECRET_KEY"}
+                }
+            });
+            
+            var content = GetFileTokenContent(response.ContentFileToken);
+            using (var d = JsonDocument.Parse(content))
+            {
+                Assert.Equal("SECRET_KEY",d.RootElement.GetProperty("headers").GetProperty("apikey").ToString());
+            }
         }
     }
 }
