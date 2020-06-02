@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
 using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.FileStores.File;
-using dFakto.States.Workers.FileStores.Ftp;
-using dFakto.States.Workers.Interfaces;
+using dFakto.States.Workers.FileStores.DirectoryFileStore;
+using dFakto.States.Workers.FileStores.FtpFileStore;
+using dFakto.States.Workers.Http;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.Configuration;
@@ -37,29 +38,37 @@ namespace dFakto.States.Workers.Tests
                             new KeyValuePair<string, string>("test:basePath", Path.Combine(Path.GetTempPath(),"utests")),
                         })
                         .Build();
+
+                    services.AddFileStores(new FileStoreFactoryConfig
+                    {
+                        Stores = new[]
+                        {
+                            new FileStoreConfig
+                            {
+                                Name = "test",
+                                Type = DirectoryFileStore.TYPE,
+                                Config = config.GetSection("test")
+                            },
+                            new FileStoreConfig
+                            {
+                                Name = "testftp",
+                                Type = FtpFileStore.TYPE,
+                                Config = config.GetSection("ftptest")
+                            }
+                        }
+                    });
+
+                    //Load plugins statically
+                    services.AddSingleton<IFileStorePlugin>(new DirectoryFileStoreFileStorePlugin());
+                    services.AddSingleton<IFileStorePlugin>(new FtpFileStoreFileStorePlugin());
+                    
+                    services.AddTransient<IWorkerPlugin,HttpWorkerPlugin>();
                     
                     services.AddStepFunctions(new StepFunctionsConfig
                     {
                         AuthenticationKey = "KEY",
                         AuthenticationSecret = "SECRET"
-                    },new FileStoreFactoryConfig
-                        {
-                            Stores = new []
-                            {
-                                new FileStoreConfig
-                                {
-                                    Name = "test",
-                                    Type = DirectoryFileStore.TYPE,
-                                    Config = config.GetSection("test")
-                                },
-                                new FileStoreConfig
-                                {
-                                    Name = "testftp",
-                                    Type = FtpFileStore.TYPE,
-                                    Config = config.GetSection("ftptest")
-                                }
-                            }
-                        }, 
+                    },
                         x =>
                     {
                         DatabaseConfig[] configs = 
@@ -67,31 +76,28 @@ namespace dFakto.States.Workers.Tests
                             new DatabaseConfig
                             {
                                 Name = "pgsql",
-                                Type = "dFakto.States.Workers.Sql.PostgreSQL.PostgreSqlBaseDatabase, dFakto.States.Workers.Sql",
+                                Type = "dFakto.States.Workers.Sql-old.PostgreSQL.PostgreSqlBaseDatabase, dFakto.States.Workers.Sql-old",
                                 ConnectionString = "server=localhost; user id=postgres; password=depfac$2000; database=test"
                             },
                             new DatabaseConfig
                             {
                                 Name = "sqlserver",
-                                Type = "dFakto.States.Workers.Sql.SQLServer.SqlServerBaseDatabase, dFakto.States.Workers.Sql",
+                                Type = "dFakto.States.Workers.Sql-old.SQLServer.SqlServerBaseDatabase, dFakto.States.Workers.Sql-old",
                                 ConnectionString = "server=localhost; user id=sa; password=depfac$2000; database=test"
                             },
                             new DatabaseConfig
                             {
                                 Name = "mariadb",
-                                Type = "dFakto.States.Workers.Sql.MySQL.MySqlDatabase, dFakto.States.Workers.Sql",
+                                Type = "dFakto.States.Workers.Sql-old.MySQL.MySqlDatabase, dFakto.States.Workers.Sql-old",
                                 ConnectionString = "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"
                             },
                             new DatabaseConfig
                             {
                                 Name = "oracle",
-                                Type = "dFakto.States.Workers.Sql.Oracle.OracleDatabase, dFakto.States.Workers.Sql",
+                                Type = "dFakto.States.Workers.Sql-old.Oracle.OracleDatabase, dFakto.States.Workers.Sql-old",
                                 ConnectionString = "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"
                             },
                         };
-                        
-                        x.AddDirectoryFileStore();
-                        x.AddFtpFileStore();
                         
                         x.AddSqlWorkers(configs);
                         x.AddWorker<GZipWorker>();

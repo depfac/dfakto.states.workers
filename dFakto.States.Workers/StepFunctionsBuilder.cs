@@ -4,11 +4,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Amazon.StepFunctions;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
-using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.FileStores.File;
-using dFakto.States.Workers.FileStores.Ftp;
-using dFakto.States.Workers.Interfaces;
 using dFakto.States.Workers.Internals;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,19 +17,14 @@ namespace dFakto.States.Workers
 {
     public class StepFunctionsBuilder
     {
-        private readonly FileStoreFactoryConfig _fileStoreFactoryConfig;
         public IServiceCollection ServiceCollection { get; }
 
         internal StepFunctionsBuilder(IServiceCollection serviceCollectionCollection,
-            StepFunctionsConfig stepFunctionsConfig, 
-            FileStoreFactoryConfig fileStoreFactoryConfig)
+            StepFunctionsConfig stepFunctionsConfig)
         {
-            _fileStoreFactoryConfig = fileStoreFactoryConfig;
             Config = stepFunctionsConfig;
             ServiceCollection = serviceCollectionCollection;
 
-            ServiceCollection.AddSingleton(fileStoreFactoryConfig);
-            ServiceCollection.AddSingleton(x => new FileStoreFactory(x));
         }
 
         public StepFunctionsConfig Config { get; }
@@ -71,15 +63,12 @@ namespace dFakto.States.Workers
         
         public IServiceCollection AddWorker(Func<IServiceProvider, IWorker> factory)
         {
-            ServiceCollection.AddSingleton<IHostedService>(x =>
-            {
-                return new WorkerHostedService(
-                    factory(x),
-                    x.GetService<IHeartbeatManager>(),
-                    x.GetService<StepFunctionsConfig>(),
-                    x.GetService<AmazonStepFunctionsClient>(),
-                    x.GetService<ILoggerFactory>());
-            });
+            ServiceCollection.AddTransient<IHostedService>(x => new WorkerHostedService(
+                factory(x),
+                x.GetService<IHeartbeatManager>(),
+                x.GetService<StepFunctionsConfig>(),
+                x.GetService<AmazonStepFunctionsClient>(),
+                x.GetService<ILoggerFactory>()));
             return ServiceCollection;
         }
 
@@ -98,20 +87,6 @@ namespace dFakto.States.Workers
                     x.GetService<ILoggerFactory>());
             });
             return ServiceCollection;
-        }
-
-        public void AddFileStore(string type, Func<IServiceProvider, string, IConfigurationSection, IFileStore> factory)
-        {
-            _fileStoreFactoryConfig.StoreBuilders.Add(type, factory);
-        }
-
-        public void AddFtpFileStore()
-        {
-            _fileStoreFactoryConfig.StoreBuilders.Add(FtpFileStore.TYPE, (provider,  uriBase, config) => new FtpFileStore(uriBase,config.Get<FtpFileStoreConfig>()));
-        }
-        public void AddDirectoryFileStore()
-        {
-            _fileStoreFactoryConfig.StoreBuilders.Add(DirectoryFileStore.TYPE, (provider,  name, config) => new DirectoryFileStore(name,config.Get<DirectoryFileStoreConfig>()));
         }
     }
 }

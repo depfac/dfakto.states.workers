@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using dFakto.States.Workers.Interfaces;
+using dFakto.States.Workers.Abstractions;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace dFakto.States.Workers.Tests

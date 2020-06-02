@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using dFakto.States.Workers.Interfaces;
-using dFakto.States.Workers.Internals;
+using dFakto.States.Workers.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace dFakto.States.Workers.FileStores
 {
-    public class FileStoreFactory
+    public class FileStoreFactory : IFileStoreFactory
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly FileStoreFactoryConfig _config;
@@ -49,7 +48,9 @@ namespace dFakto.States.Workers.FileStores
         
         private IFileStore GetFileStore(FileStoreConfig configuration)
         {
-            return _config.StoreBuilders[configuration.Type](_serviceProvider,configuration.Name,configuration.Config);
+            return _serviceProvider.GetServices<IFileStorePlugin>()
+                .FirstOrDefault(x => x.Name == configuration.Type)
+                ?.CreateInstance(_serviceProvider,configuration.Name,configuration.Config);
         }
 
     }

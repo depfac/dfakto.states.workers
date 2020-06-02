@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace dFakto.States.Workers.Internals
 {
-    internal abstract class CancellableHostedService : IHostedService
+    public abstract class CancellableHostedService : IHostedService
     {
         private CancellationTokenSource _cts;
         private Task _executingTask;

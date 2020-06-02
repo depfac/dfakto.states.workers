@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.Interfaces;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.DependencyInjection;

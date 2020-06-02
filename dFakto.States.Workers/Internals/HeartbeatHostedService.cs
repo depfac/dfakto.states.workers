@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.Internals
 {
-    internal interface IHeartbeatManager
+    public interface IHeartbeatManager
     {
         void RegisterHeartbeat(TimeSpan delay, string taskToken, CancellationTokenSource token);
         void UnregisterHeartbeat(string taskToken);

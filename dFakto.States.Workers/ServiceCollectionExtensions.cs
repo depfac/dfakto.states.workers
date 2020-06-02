@@ -3,6 +3,7 @@ using System.Net.Http;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.StepFunctions;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Internals;
@@ -38,17 +39,26 @@ namespace dFakto.States.Workers
         
         public static IServiceCollection AddStepFunctions(this IServiceCollection services,
             StepFunctionsConfig stepFunctionsConfig,
-            FileStoreFactoryConfig fileStoreFactoryConfig,
             Action<StepFunctionsBuilder> builder)
         {
-            var sfb = new StepFunctionsBuilder(services, stepFunctionsConfig, fileStoreFactoryConfig);
+            var sfb = new StepFunctionsBuilder(services, stepFunctionsConfig);
             builder(sfb);
             services.AddSingleton<HeartbeatHostedService>();
             services.AddTransient<IHeartbeatManager>(x => x.GetService<HeartbeatHostedService>());
             services.AddTransient<IHostedService>(x => x.GetService<HeartbeatHostedService>());
             services.AddSingleton(sfb.Config);
             services.AddTransient(GetAmazonStepFunctionsClient);
+            
 
+            
+            return services;
+        }
+
+        public static IServiceCollection AddFileStores(this IServiceCollection services,
+            FileStoreFactoryConfig fileStoreFactoryConfig)
+        {
+            services.AddSingleton(fileStoreFactoryConfig);
+            services.AddSingleton<IFileStoreFactory>(x => new FileStoreFactory(x));
             return services;
         }
 

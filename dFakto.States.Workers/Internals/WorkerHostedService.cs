@@ -4,19 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.StepFunctions;
 using Amazon.StepFunctions.Model;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
-using dFakto.States.Workers.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.Internals
 {
-    internal class WorkerHostedService : CancellableHostedService
+    public class WorkerHostedService : CancellableHostedService
     {
         private readonly IHeartbeatManager _heartbeatManager;
         private readonly ILogger<WorkerHostedService> _logger;
         private long _runningTasks = 0;
 
-        internal WorkerHostedService(IWorker worker,
+        public WorkerHostedService(IWorker worker,
             IHeartbeatManager heartbeatManager,
             StepFunctionsConfig config,
             AmazonStepFunctionsClient client,

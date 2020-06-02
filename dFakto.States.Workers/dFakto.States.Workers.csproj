@@ -1,26 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Description>Framework to ease creation of Amazon StepFunction workers using dotnet</Description>
-        <Copyright>Vincent DARON &amp; dFakto</Copyright>
-        <PackageProjectUrl>https://github.com/depfac/dfakto.states.workers</PackageProjectUrl>
-        <PackageLicenseUrl>https://raw.githubusercontent.com/depfac/dfakto.states.workers/master/LICENSE</PackageLicenseUrl>
-        <RepositoryUrl>https://github.com/depfac/dfakto.states.workers</RepositoryUrl>
-        <LangVersion>latest</LangVersion>
-        <PackageVersion>1.1.0-beta1</PackageVersion>
-        <PackageTags>stepfunctions aws dfakto statelanguage</PackageTags>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <PackageId>dFakto.States.Workers.BaseHost</PackageId>
+        <Authors>dFakto.States.Workers.BaseHost</Authors>
+        <Product>dFakto.States.Workers.BaseHost</Product>
+        <AssemblyName>dFakto.States.Workers.BaseHost</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.StepFunctions" Version="3.3.103.15" />
-        <PackageReference Include="CoreFtp" Version="1.4.0" />
-        <PackageReference Include="FluentFTP" Version="32.2.2" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+        <PackageReference Include="McMaster.NETCore.Plugins" Version="1.3.0" />
         <PackageReference Include="System.Text.Json" Version="4.7.0" />
+        <PackageReference Include="McMaster.NETCore.Plugins" Version="1.3.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="3.1.4" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.4" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.4" />
+        <PackageReference Include="Sentry.AspNetCore" Version="2.1.1" />
+        <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\dFakto.States.Workers.Abstractions\dFakto.States.Workers.Abstractions.csproj" />
+      <ProjectReference Include="..\dFakto.States.Workers.Sql-old\dFakto.States.Workers.Sql-old.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

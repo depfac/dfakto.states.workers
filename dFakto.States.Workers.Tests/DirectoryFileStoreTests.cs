@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using dFakto.States.Workers.FileStores.File;
+using dFakto.States.Workers.FileStores.DirectoryFileStore;
 using Xunit;
 
 namespace dFakto.States.Workers.Tests

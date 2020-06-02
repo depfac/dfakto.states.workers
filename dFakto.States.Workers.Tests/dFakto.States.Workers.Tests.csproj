@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
         <PackageReference Include="xunit" Version="2.4.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -15,7 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\dFakto.States.Workers.Sql\dFakto.States.Workers.Sql.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.FileStores.DirectoryFileStore\dFakto.States.Workers.FileStores.DirectoryFileStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.FileStores.FtpFileStore\dFakto.States.Workers.FileStores.FtpFileStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Http\dFakto.States.Workers.Http.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Sql-old\dFakto.States.Workers.Sql-old.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers\dFakto.States.Workers.csproj" />
     </ItemGroup>
 
