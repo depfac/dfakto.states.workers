@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.FileStores;
+using dFakto.States.Workers.Gzip;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

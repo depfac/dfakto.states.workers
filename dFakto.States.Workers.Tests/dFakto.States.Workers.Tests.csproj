@@ -17,6 +17,7 @@
     <ItemGroup>
         <ProjectReference Include="..\dFakto.States.Workers.FileStores.DirectoryFileStore\dFakto.States.Workers.FileStores.DirectoryFileStore.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.FileStores.FtpFileStore\dFakto.States.Workers.FileStores.FtpFileStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Gzip\dFakto.States.Workers.Gzip.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Http\dFakto.States.Workers.Http.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Sql-old\dFakto.States.Workers.Sql-old.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers\dFakto.States.Workers.csproj" />

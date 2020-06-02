@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.Extensions;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql.Common;
 using dFakto.States.Workers.Sql.Csv;
 using dFakto.States.Workers.Sql.Exceptions;
@@ -28,11 +26,11 @@ namespace dFakto.States.Workers.Sql
     {
         private readonly ILogger<SqlExportToCsvWorker> _logger;
         private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly FileStoreFactory _fileStoreFactory;
+        private readonly IFileStoreFactory _fileStoreFactory;
 
         private static readonly string CsvExtension = "csv";
         
-        public SqlExportToCsvWorker(ILogger<SqlExportToCsvWorker> logger, IEnumerable<BaseDatabase> databases, FileStoreFactory fileStoreFactory) : 
+        public SqlExportToCsvWorker(ILogger<SqlExportToCsvWorker> logger, IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : 
             base("exportToCsv", TimeSpan.FromSeconds(30), 5)
         {
             _logger = logger;

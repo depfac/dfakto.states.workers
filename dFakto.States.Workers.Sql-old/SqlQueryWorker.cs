@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql.Common;
 using dFakto.States.Workers.Sql.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -22,9 +21,9 @@ namespace dFakto.States.Workers.Sql
     {
         private readonly ILogger<SqlQueryWorker> _logger;
         private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly FileStoreFactory _fileStoreFactory;
+        private readonly IFileStoreFactory _fileStoreFactory;
 
-        public SqlQueryWorker(ILogger<SqlQueryWorker> logger, IEnumerable<BaseDatabase> databases, FileStoreFactory fileStoreFactory) : base("SQLQuery")
+        public SqlQueryWorker(ILogger<SqlQueryWorker> logger, IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : base("SQLQuery")
         {
             _logger = logger;
             _databases = databases;

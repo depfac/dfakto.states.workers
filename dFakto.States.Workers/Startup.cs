@@ -44,27 +44,8 @@ namespace dFakto.States.Workers.BaseHost
 
             
             ConfigurePlugins(_plugins, services);
-            
-            services.AddStepFunctions(
-                Configuration.GetSection("stepFunctions").Get<StepFunctionsConfig>()
-            , x =>
-            {
-                if (string.IsNullOrWhiteSpace(x.Config.EnvironmentName))
-                {
-                    x.Config.EnvironmentName = _env.EnvironmentName;
-                }
-                
-                // //x.AddSqlWorkers(Configuration.GetSection("databases").Get<IEnumerable<DatabaseConfig>>());
-                //
-                // //x.AddWorkers(Assembly.GetExecutingAssembly());
-                // //x.AddWorker<HttpWorker>();
-                // x.AddWorker<GZipWorker>();
-                // x.AddWorker("Dummy", Task.FromResult);
-                // x.AddWorker("Hello", s => Task.FromResult($"Hello {s}!"));
-                // x.AddWorker<SqlInsertFromJsonArrayWorker>();
-                // x.AddWorker<SqlExportToCsvWorker>();
-                // x.AddWorker<SqlBulkInsertWorker>();
-            });
+
+            services.AddStepFunctions(Configuration.GetSection("stepFunctions").Get<StepFunctionsConfig>());
 
             services.AddRazorPages();
         }
@@ -121,28 +102,35 @@ namespace dFakto.States.Workers.BaseHost
             {
                 foreach (var pluginType in loader
                     .LoadDefaultAssembly()
-                    .GetTypes()
-                    .Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract))
+                    .GetTypes().Where(x => !x.IsAbstract))
                 {
-                    // This assumes the implementation of IPlugin has a parameterless constructor
-                    var plugin = Activator.CreateInstance(pluginType) as IPlugin;
-                    plugin?.Configure(services);
-                    services.AddSingleton(plugin);
-
-                    switch (plugin)
+                    if (typeof(IPlugin).IsAssignableFrom(pluginType))
                     {
-                        case IFileStorePlugin fileStorePlugin:
-                            services.AddSingleton(fileStorePlugin);
-                            break;
-                        case IWorkerPlugin workerPlugin:
-                            services.AddTransient<IHostedService>(x => new WorkerHostedService(
-                                workerPlugin.CreateInstance(x),
-                                x.GetService<IHeartbeatManager>(),
-                                x.GetService<StepFunctionsConfig>(),
-                                x.GetService<AmazonStepFunctionsClient>(),
-                                x.GetService<ILoggerFactory>()));
-                            break;
+                        // This assumes the implementation of IPlugin has a parameterless constructor
+                        var plugin = Activator.CreateInstance(pluginType) as IPlugin;
+                        plugin?.Configure(services);
+                        services.AddSingleton(plugin);
+                        
+                        switch (pluginType)
+                        {
+                            case IFileStorePlugin fileStorePlugin:
+                                services.AddSingleton(fileStorePlugin);
+                                break;
+                        }
                     }
+
+                    if (typeof(IWorker).IsAssignableFrom(pluginType))
+                    {
+                        services.AddTransient(pluginType);
+                        services.AddTransient<IHostedService>(x => new WorkerHostedService(
+                            (IWorker) x.GetService(pluginType),
+                            x.GetService<IHeartbeatManager>(),
+                            x.GetService<StepFunctionsConfig>(),
+                            x.GetService<AmazonStepFunctionsClient>(),
+                            x.GetService<ILoggerFactory>()));
+                    }
+
+
                 }
             }
         }

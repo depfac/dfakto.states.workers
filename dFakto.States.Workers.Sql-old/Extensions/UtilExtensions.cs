@@ -2,7 +2,7 @@
 using System.Data;
 using System.Globalization;
 
-namespace dFakto.States.Workers.Extensions
+namespace dFakto.States.Workers
 {
 	public static class UtilExtensions
 	{

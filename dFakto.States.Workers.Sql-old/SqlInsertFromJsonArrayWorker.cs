@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -32,9 +31,9 @@ namespace dFakto.States.Workers.Sql
     {
         private readonly ILogger<SqlInsertFromJsonArrayWorker> _logger;
         private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly FileStoreFactory _fileStoreFactory;
+        private readonly IFileStoreFactory _fileStoreFactory;
 
-        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger,IEnumerable<BaseDatabase> databases, FileStoreFactory fileStoreFactory) : base(
+        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger,IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : base(
             "jsonArrayToSql",
             TimeSpan.FromSeconds(30),
             10)

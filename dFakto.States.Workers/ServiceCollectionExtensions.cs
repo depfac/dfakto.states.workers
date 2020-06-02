@@ -38,18 +38,13 @@ namespace dFakto.States.Workers
         }
         
         public static IServiceCollection AddStepFunctions(this IServiceCollection services,
-            StepFunctionsConfig stepFunctionsConfig,
-            Action<StepFunctionsBuilder> builder)
+            StepFunctionsConfig stepFunctionsConfig)
         {
-            var sfb = new StepFunctionsBuilder(services, stepFunctionsConfig);
-            builder(sfb);
             services.AddSingleton<HeartbeatHostedService>();
             services.AddTransient<IHeartbeatManager>(x => x.GetService<HeartbeatHostedService>());
             services.AddTransient<IHostedService>(x => x.GetService<HeartbeatHostedService>());
-            services.AddSingleton(sfb.Config);
+            services.AddSingleton(stepFunctionsConfig);
             services.AddTransient(GetAmazonStepFunctionsClient);
-            
-
             
             return services;
         }
@@ -88,7 +83,6 @@ namespace dFakto.States.Workers
                 {
                     stepFunctionEnvironmentConfig.HttpClientFactory = new NoCertificateCheckHttpClientFactory();
                 }
-                    
             }
 
             return new AmazonStepFunctionsClient(credentials, stepFunctionEnvironmentConfig);

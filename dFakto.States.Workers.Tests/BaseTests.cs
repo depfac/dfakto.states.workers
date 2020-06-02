@@ -62,50 +62,38 @@ namespace dFakto.States.Workers.Tests
                     services.AddSingleton<IFileStorePlugin>(new DirectoryFileStoreFileStorePlugin());
                     services.AddSingleton<IFileStorePlugin>(new FtpFileStoreFileStorePlugin());
                     
-                    services.AddTransient<IWorkerPlugin,HttpWorkerPlugin>();
+                    DatabaseConfig[] configs = 
+                    {
+                        new DatabaseConfig
+                        {
+                            Name = "pgsql",
+                            Type = "dFakto.States.Workers.Sql-old.PostgreSQL.PostgreSqlBaseDatabase, dFakto.States.Workers.Sql-old",
+                            ConnectionString = "server=localhost; user id=postgres; password=depfac$2000; database=test"
+                        },
+                        new DatabaseConfig
+                        {
+                            Name = "sqlserver",
+                            Type = "dFakto.States.Workers.Sql-old.SQLServer.SqlServerBaseDatabase, dFakto.States.Workers.Sql-old",
+                            ConnectionString = "server=localhost; user id=sa; password=depfac$2000; database=test"
+                        },
+                        new DatabaseConfig
+                        {
+                            Name = "mariadb",
+                            Type = "dFakto.States.Workers.Sql-old.MySQL.MySqlDatabase, dFakto.States.Workers.Sql-old",
+                            ConnectionString = "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"
+                        },
+                        new DatabaseConfig
+                        {
+                            Name = "oracle",
+                            Type = "dFakto.States.Workers.Sql-old.Oracle.OracleDatabase, dFakto.States.Workers.Sql-old",
+                            ConnectionString = "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"
+                        },
+                    };
                     
                     services.AddStepFunctions(new StepFunctionsConfig
                     {
                         AuthenticationKey = "KEY",
                         AuthenticationSecret = "SECRET"
-                    },
-                        x =>
-                    {
-                        DatabaseConfig[] configs = 
-                        {
-                            new DatabaseConfig
-                            {
-                                Name = "pgsql",
-                                Type = "dFakto.States.Workers.Sql-old.PostgreSQL.PostgreSqlBaseDatabase, dFakto.States.Workers.Sql-old",
-                                ConnectionString = "server=localhost; user id=postgres; password=depfac$2000; database=test"
-                            },
-                            new DatabaseConfig
-                            {
-                                Name = "sqlserver",
-                                Type = "dFakto.States.Workers.Sql-old.SQLServer.SqlServerBaseDatabase, dFakto.States.Workers.Sql-old",
-                                ConnectionString = "server=localhost; user id=sa; password=depfac$2000; database=test"
-                            },
-                            new DatabaseConfig
-                            {
-                                Name = "mariadb",
-                                Type = "dFakto.States.Workers.Sql-old.MySQL.MySqlDatabase, dFakto.States.Workers.Sql-old",
-                                ConnectionString = "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"
-                            },
-                            new DatabaseConfig
-                            {
-                                Name = "oracle",
-                                Type = "dFakto.States.Workers.Sql-old.Oracle.OracleDatabase, dFakto.States.Workers.Sql-old",
-                                ConnectionString = "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"
-                            },
-                        };
-                        
-                        x.AddSqlWorkers(configs);
-                        x.AddWorker<GZipWorker>();
-                        x.AddWorker<HttpWorker>();
-                        x.AddWorker<SqlQueryWorker>();
-                        x.AddWorker<SqlBulkInsertWorker>();
-                        x.AddWorker<SqlInsertFromInputWorker>();
-                        x.AddWorker<SqlInsertFromJsonArrayWorker>();
                     });
                 });
 

@@ -13,12 +13,12 @@ namespace dFakto.States.Workers.Sql
 {
     public static class StepFunctionBuilderExtensions
     {
-        public static StepFunctionsBuilder AddSqlWorkers(this StepFunctionsBuilder builder, IEnumerable<DatabaseConfig> databases)
+        public static IServiceCollection AddSqlWorkers(this IServiceCollection builder, IEnumerable<DatabaseConfig> databases)
         {
-            builder.ServiceCollection.AddTransient<SqlServerBaseDatabase>();
-            builder.ServiceCollection.AddTransient<OracleDatabase>();
-            builder.ServiceCollection.AddTransient<MySqlDatabase>();
-            builder.ServiceCollection.AddTransient<PostgreSqlBaseDatabase>();
+            builder.AddTransient<SqlServerBaseDatabase>();
+            builder.AddTransient<OracleDatabase>();
+            builder.AddTransient<MySqlDatabase>();
+            builder.AddTransient<PostgreSqlBaseDatabase>();
             
             if (databases != null)
             {
@@ -26,7 +26,7 @@ namespace dFakto.States.Workers.Sql
                 {
                     try
                     {
-                        builder.ServiceCollection.AddSingleton<BaseDatabase>(x =>
+                        builder.AddSingleton<BaseDatabase>(x =>
                         {
                             var t = Type.GetType(database.Type);
                             BaseDatabase db = (BaseDatabase) x.GetService(t);
@@ -40,10 +40,7 @@ namespace dFakto.States.Workers.Sql
                     }
                 }
             }
-
-            builder.AddWorker<SqlQueryWorker>();
-            builder.AddWorker<SqlBulkInsertWorker>();
-            builder.AddWorker<SqlExportToCsvWorker>();
+            
             return builder;
         }
     }
