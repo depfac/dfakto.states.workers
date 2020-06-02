@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace dFakto.States.Workers.Abstractions
 {
-    public interface IFileStore : IDisposable
+    public interface IFileStore : IStore, IDisposable
     {
         Task<string> CreateFileToken(string fileName);
         Task<string> GetFileName(string fileToken);

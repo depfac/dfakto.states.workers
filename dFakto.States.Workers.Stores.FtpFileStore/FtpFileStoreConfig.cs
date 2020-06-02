@@ -1,6 +1,6 @@
 using System.Security.Authentication;
 
-namespace dFakto.States.Workers.FileStores.FtpFileStore
+namespace dFakto.States.Workers.Stores.FtpFileStore
 {
     public class FtpFileStoreConfig
     {

@@ -3,13 +3,13 @@ using dFakto.States.Workers.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace dFakto.States.Workers.FileStores.FtpFileStore
+namespace dFakto.States.Workers.Stores.FtpFileStore
 {
-    public class FtpFileStoreFileStorePlugin : IFileStorePlugin
+    public class FtpStoreStorePlugin : IStorePlugin
     {
-        public string Name => FtpFileStore.TYPE;
+        public string Type => FtpFileStore.TYPE;
         
-        public IFileStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
+        public IStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
         {
             return new FtpFileStore(name,configurationSection.Get<FtpFileStoreConfig>());
         }

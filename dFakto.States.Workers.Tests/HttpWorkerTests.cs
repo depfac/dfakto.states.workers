@@ -24,16 +24,16 @@ namespace dFakto.States.Workers.Tests
         {
             public int IntTest { get; set; } = 33;
         }
-        private readonly FileStoreFactory _fileStoreFactory;
+        private readonly StoreFactory _storeFactory;
 
         public HttpWorkerTests()
         {
-            _fileStoreFactory = Host.Services.GetService<FileStoreFactory>();
+            _storeFactory = Host.Services.GetService<StoreFactory>();
         }
 
         private string GetFileTokenContent(string fileToken)
         {
-            using(var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(fileToken))
+            using(var fileStore = _storeFactory.GetFileStoreFromFileToken(fileToken))
             using (var input = fileStore.OpenRead(fileToken).Result)
             using (var reader = new StreamReader(input, Encoding.UTF8))
             {
@@ -43,7 +43,7 @@ namespace dFakto.States.Workers.Tests
         
         private string SetFileTokenContent(string content)
         {
-            using var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            using var fileStore = _storeFactory.GetFileStoreFromName("test");
 
             var token = fileStore.CreateFileToken("tmp").Result;
             using (var output = fileStore.OpenWrite(token).Result)
@@ -107,7 +107,7 @@ namespace dFakto.States.Workers.Tests
         public async Task TestPostText()
         {
             var text = "Hello world, thanks postman-echo !";
-            using var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            using var fileStore = _storeFactory.GetFileStoreFromName("test");
 
             string token = await fileStore.CreateFileToken("sample.txt");
             using (StreamWriter writer = new StreamWriter(await fileStore.OpenWrite(token)))

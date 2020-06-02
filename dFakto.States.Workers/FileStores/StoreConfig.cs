@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace dFakto.States.Workers.FileStores
 {
-    public class FileStoreConfig
+    public class StoreConfig
     {
         public string Name { get; set; }
         public string Type { get; set; }

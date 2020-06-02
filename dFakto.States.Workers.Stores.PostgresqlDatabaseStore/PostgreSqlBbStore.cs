@@ -4,40 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.Abstractions;
+using dFakto.States.Workers.Sql.PostgreSQL;
 using Npgsql;
 
-namespace dFakto.States.Workers.Sql.PostgreSQL
+namespace dFakto.States.Workers.Stores.PostgresqlDatabaseStore
 {
-    internal class PostgreSqlBaseDatabase : BaseDatabase
+    internal class PostgreSqlBbStore : IDbStore
     {
-        public override DbConnection CreateConnection()
+        private readonly string _name;
+        private readonly NpgsqlConfig _config;
+
+        public PostgreSqlBbStore(string name, NpgsqlConfig config)
         {
-            return new NpgsqlConnection(Config.ConnectionString);
+            _name = name;
+            _config = config;
+        }
+        
+        public DbConnection CreateConnection()
+        {
+            return new NpgsqlConnection(_config.ConnectionString);
         }
 
-        public override async Task BulkInsert(IDataReader reader, string schemaName, string tableName, int timeout, CancellationToken token)
+        public async Task BulkInsert(IDataReader reader, string schemaName, string tableName, int timeout, CancellationToken token)
         {
-            await using (var conn = new NpgsqlConnection(Config.ConnectionString))
+            await using var conn = new NpgsqlConnection(_config.ConnectionString);
+            await conn.OpenAsync(token);
+            
+            await using var writer = conn.BeginTextImport(GetCopyQuery(new CopyQueryParameters
             {
-                await conn.OpenAsync(token);
-                using (var writer = conn.BeginTextImport(GetCopyQuery(new CopyQueryParameters
-                {
-                    TableName = string.IsNullOrEmpty(schemaName) ? tableName : schemaName + "." + tableName,
-                    Delimiter = ",",
-                    Encoding = "UTF8",
-                    Escape = '\"',
-                    Format = "csv",
-                    Header = false,
-                    Null = "",
-                    Quote = '\"'
-                })))
-                {
-                    while (reader.Read())
-                    {
-                        await writer.WriteLineAsync(GetLine(reader));
-                    }
-                }
+                TableName = string.IsNullOrEmpty(schemaName) ? tableName : schemaName + "." + tableName,
+                Delimiter = ",",
+                Encoding = "UTF8",
+                Escape = '\"',
+                Format = "csv",
+                Header = false,
+                Null = "",
+                Quote = '\"'
+            }));
+            while (reader.Read())
+            {
+                await writer.WriteLineAsync(GetLine(reader));
             }
         }
 

@@ -5,8 +5,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace dFakto.States.Workers.FileStores
 {
-    public class FileStoreFactoryConfig
+    public class StoreFactoryConfig
     {
-        public FileStoreConfig[] Stores { get; set; }
+        public StoreConfig[] Stores { get; set; }
     }
 }

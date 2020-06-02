@@ -3,13 +3,13 @@ using dFakto.States.Workers.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace dFakto.States.Workers.FileStores.DirectoryFileStore
+namespace dFakto.States.Workers.Stores.DirectoryFileStore
 {
-    public class DirectoryFileStoreFileStorePlugin : IFileStorePlugin
+    public class DirectoryStoreStorePlugin : IStorePlugin
     {
-        public string Name => DirectoryFileStore.TYPE;
+        public string Type => DirectoryFileStore.TYPE;
         
-        public IFileStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
+        public IStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
         {
             return new DirectoryFileStore(name,configurationSection.Get<DirectoryFileStoreConfig>());
         }

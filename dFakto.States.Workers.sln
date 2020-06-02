@@ -9,15 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dFakto.States.Workers.Sql-o
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dFakto.States.Workers.Tests", "dFakto.States.Workers.Tests\dFakto.States.Workers.Tests.csproj", "{A5256C96-A238-4994-9251-60662AE4ADAB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileStores", "FileStores", "{8D4DFB6D-5625-4BF7-99B5-35254872895D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stores", "Stores", "{8D4DFB6D-5625-4BF7-99B5-35254872895D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.FileStores.DirectoryFileStore", "dFakto.States.Workers.FileStores.DirectoryFileStore\dFakto.States.Workers.FileStores.DirectoryFileStore.csproj", "{F9E67550-1781-46C0-9F67-6B2F7886075E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Stores.DirectoryFileStore", "dFakto.States.Workers.Stores.DirectoryFileStore\dFakto.States.Workers.Stores.DirectoryFileStore.csproj", "{F9E67550-1781-46C0-9F67-6B2F7886075E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.FileStores.FtpFileStore", "dFakto.States.Workers.FileStores.FtpFileStore\dFakto.States.Workers.FileStores.FtpFileStore.csproj", "{37829F35-E370-471F-A81D-F598E1FA49B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Stores.FtpFileStore", "dFakto.States.Workers.Stores.FtpFileStore\dFakto.States.Workers.Stores.FtpFileStore.csproj", "{37829F35-E370-471F-A81D-F598E1FA49B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Abstractions", "dFakto.States.Workers.Abstractions\dFakto.States.Workers.Abstractions.csproj", "{B030B011-EB5E-401F-8749-3EC49A64B7CC}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Databases", "Databases", "{649A2F15-382D-41B8-ABBE-899D5521286B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workers", "Workers", "{A5668192-607E-4F8C-AF39-31BE7E187AE1}"
 EndProject
@@ -27,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Http"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Gzip", "dFakto.States.Workers.Gzip\dFakto.States.Workers.Gzip.csproj", "{C093562A-5A93-4D98-91B2-59C0342F6E22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Sql", "dFakto.States.Workers.Sql\dFakto.States.Workers.Sql.csproj", "{A096A0CE-77E4-4C90-B4FA-89CFD61E1EE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Stores.PostgresqlDatabaseStore", "dFakto.States.Workers.Stores.PostgresqlDatabaseStore\dFakto.States.Workers.Stores.PostgresqlDatabaseStore.csproj", "{1FDB1D53-C647-4598-AFC2-4841E1721D0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,10 +65,10 @@ Global
 		{C093562A-5A93-4D98-91B2-59C0342F6E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C093562A-5A93-4D98-91B2-59C0342F6E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C093562A-5A93-4D98-91B2-59C0342F6E22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A096A0CE-77E4-4C90-B4FA-89CFD61E1EE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A096A0CE-77E4-4C90-B4FA-89CFD61E1EE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A096A0CE-77E4-4C90-B4FA-89CFD61E1EE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A096A0CE-77E4-4C90-B4FA-89CFD61E1EE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FDB1D53-C647-4598-AFC2-4841E1721D0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FDB1D53-C647-4598-AFC2-4841E1721D0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FDB1D53-C647-4598-AFC2-4841E1721D0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FDB1D53-C647-4598-AFC2-4841E1721D0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +82,6 @@ Global
 		{C49F4253-00AB-4DAA-AA0A-56391FA30E2C} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
 		{5165C078-F832-412F-AFA7-6A2FB34E60B4} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
 		{C093562A-5A93-4D98-91B2-59C0342F6E22} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
-		{A096A0CE-77E4-4C90-B4FA-89CFD61E1EE8} = {C49F4253-00AB-4DAA-AA0A-56391FA30E2C}
+		{1FDB1D53-C647-4598-AFC2-4841E1721D0A} = {8D4DFB6D-5625-4BF7-99B5-35254872895D}
 	EndGlobalSection
 EndGlobal

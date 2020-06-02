@@ -16,10 +16,10 @@ namespace dFakto.States.Workers.Tests
     {
         private const string Content = "Hello world";
 
-        private readonly FileStoreFactory _fileStoreFactory;
+        private readonly StoreFactory _storeFactory;
         public GZipWorkerTests()
         {
-            _fileStoreFactory = Host.Services.GetService<FileStoreFactory>();
+            _storeFactory = Host.Services.GetService<StoreFactory>();
         }
         
         [Theory]
@@ -29,7 +29,7 @@ namespace dFakto.States.Workers.Tests
         [InlineData("helloworld","test")]
         public async Task Simple_Gunzip_File(string fileName, string fileStoreName)
         {
-            var fileStore = _fileStoreFactory.GetFileStoreFromName(fileStoreName);
+            var fileStore = _storeFactory.GetFileStoreFromName(fileStoreName);
             
             GZipWorker worker = Host.Services.GetService<GZipWorker>();
             var token = await CreateGZipFileInStore(fileStore, fileName);
@@ -47,7 +47,7 @@ namespace dFakto.States.Workers.Tests
         [InlineData("helloworld")]
         public async Task Simple_compress_File(string fileName)
         {
-            var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            var fileStore = _storeFactory.GetFileStoreFromName("test");
 
             GZipWorker worker = Host.Services.GetService<GZipWorker>();
             var token = await CreateFileInStore(fileStore, fileName);
@@ -66,7 +66,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task Gunzip_File_DeleteSource()
         {
-            var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            var fileStore = _storeFactory.GetFileStoreFromName("test");
             GZipWorker worker = Host.Services.GetService<GZipWorker>();
             var token = await CreateGZipFileInStore(fileStore, "helloworld.txt.gz");
 
@@ -83,7 +83,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task Compress_Delete_Source()
         {
-            var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            var fileStore = _storeFactory.GetFileStoreFromName("test");
             
             GZipWorker worker = Host.Services.GetService<GZipWorker>();
             var token = await CreateFileInStore(fileStore, "helloworld.txt");
@@ -103,7 +103,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task Gunzip_File_SetOutputFileName()
         {   
-            var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            var fileStore = _storeFactory.GetFileStoreFromName("test");
             GZipWorker worker = Host.Services.GetService<GZipWorker>();
             var token = await CreateGZipFileInStore(fileStore, "helloworld.txt.gz");
 
@@ -121,7 +121,7 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task Compress_Set_Filename()
         {
-            var fileStore = _fileStoreFactory.GetFileStoreFromName("test");
+            var fileStore = _storeFactory.GetFileStoreFromName("test");
             GZipWorker worker = Host.Services.GetService<GZipWorker>();
             var token = await CreateFileInStore(fileStore, "helloworld.txt");
 
@@ -162,7 +162,7 @@ namespace dFakto.States.Workers.Tests
 
         private async Task<string> UnzipFile(string outputFileName, string compressedFileToken)
         {
-            using (var fileStore = _fileStoreFactory.GetFileStoreFromName("test"))
+            using (var fileStore = _storeFactory.GetFileStoreFromName("test"))
             {
                 var outputFileToken = await fileStore.CreateFileToken(outputFileName);
                 using (var compressedFileStream = await fileStore.OpenRead(compressedFileToken))
@@ -177,7 +177,7 @@ namespace dFakto.States.Workers.Tests
 
         private async Task<string> ReadTextFileInStore(string fileToken)
         {
-            using(var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(fileToken))
+            using(var fileStore = _storeFactory.GetFileStoreFromFileToken(fileToken))
             await using (var stream = await fileStore.OpenRead(fileToken))
             using (var reader = new StreamReader(stream, Encoding.UTF8))
             {

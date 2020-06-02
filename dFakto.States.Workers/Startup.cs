@@ -40,7 +40,7 @@ namespace dFakto.States.Workers.BaseHost
         {
             services.AddOptions();
 
-            services.AddFileStores(Configuration.GetSection("fileStores").Get<FileStoreFactoryConfig>());
+            services.AddFileStores(Configuration.GetSection("fileStores").Get<StoreFactoryConfig>());
 
             
             ConfigurePlugins(_plugins, services);
@@ -85,7 +85,7 @@ namespace dFakto.States.Workers.BaseHost
                         new[] { 
                             typeof(IPlugin),
                             typeof(ILogger),
-                            typeof(IFileStorePlugin),
+                            typeof(IStorePlugin),
                             typeof(IFileStore),
                             typeof(IServiceCollection)});
                     loaders.Add(loader);
@@ -113,7 +113,7 @@ namespace dFakto.States.Workers.BaseHost
                         
                         switch (pluginType)
                         {
-                            case IFileStorePlugin fileStorePlugin:
+                            case IStorePlugin fileStorePlugin:
                                 services.AddSingleton(fileStorePlugin);
                                 break;
                         }

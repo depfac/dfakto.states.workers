@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
 using dFakto.States.Workers.FileStores;
-using dFakto.States.Workers.FileStores.DirectoryFileStore;
-using dFakto.States.Workers.FileStores.FtpFileStore;
+using dFakto.States.Workers.Stores.DirectoryFileStore;
+using dFakto.States.Workers.Stores.FtpFileStore;
 using dFakto.States.Workers.Http;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
@@ -39,17 +39,17 @@ namespace dFakto.States.Workers.Tests
                         })
                         .Build();
 
-                    services.AddFileStores(new FileStoreFactoryConfig
+                    services.AddFileStores(new StoreFactoryConfig
                     {
                         Stores = new[]
                         {
-                            new FileStoreConfig
+                            new StoreConfig
                             {
                                 Name = "test",
                                 Type = DirectoryFileStore.TYPE,
                                 Config = config.GetSection("test")
                             },
-                            new FileStoreConfig
+                            new StoreConfig
                             {
                                 Name = "testftp",
                                 Type = FtpFileStore.TYPE,
@@ -59,8 +59,8 @@ namespace dFakto.States.Workers.Tests
                     });
 
                     //Load plugins statically
-                    services.AddSingleton<IFileStorePlugin>(new DirectoryFileStoreFileStorePlugin());
-                    services.AddSingleton<IFileStorePlugin>(new FtpFileStoreFileStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new DirectoryStoreStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new FtpStoreStorePlugin());
                     
                     DatabaseConfig[] configs = 
                     {

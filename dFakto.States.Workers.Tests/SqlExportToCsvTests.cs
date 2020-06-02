@@ -14,10 +14,10 @@ namespace dFakto.States.Workers.Tests
     {
         private readonly string _tableName = StringUtils.Random(10);
         
-        private readonly FileStoreFactory _fileStoreFactory;
+        private readonly StoreFactory _storeFactory;
         public SqlExportToCsvTests()
         {
-            _fileStoreFactory = Host.Services.GetService<FileStoreFactory>();
+            _storeFactory = Host.Services.GetService<StoreFactory>();
             CreateTable(_tableName);
         }
         
@@ -38,7 +38,7 @@ namespace dFakto.States.Workers.Tests
                 };
                 
                 var csvFileToken = await worker.DoJsonWork<SqlExportToCsvInput,string>(input);
-                var outputFileStore = _fileStoreFactory.GetFileStoreFromName("test");
+                var outputFileStore = _storeFactory.GetFileStoreFromName("test");
                 string csvFileContent = await ReadTextFileInStore(outputFileStore, csvFileToken);
                 var lines = csvFileContent.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 Assert.Equal(3, lines.Length);
@@ -67,7 +67,7 @@ namespace dFakto.States.Workers.Tests
                 };
                 
                 var csvFileToken = await worker.DoJsonWork<SqlExportToCsvInput,string>(input);
-                var outputFileStore = _fileStoreFactory.GetFileStoreFromName("test");
+                var outputFileStore = _storeFactory.GetFileStoreFromName("test");
                 string csvFileContent = await ReadTextFileInStore(outputFileStore, csvFileToken);
                 var lines = csvFileContent.Split("\n\r".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 Assert.Equal(3, lines.Length);

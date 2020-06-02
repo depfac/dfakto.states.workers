@@ -67,7 +67,7 @@ namespace dFakto.States.Workers.Tests
         [InlineData("mariadb")]
         public async Task TestBulkInsertFromCsvFileWithoutHeader(string destination)
         {
-            var fileStore = Host.Services.GetService<FileStoreFactory>().GetFileStoreFromName("test");
+            var fileStore = Host.Services.GetService<StoreFactory>().GetFileStoreFromName("test");
             var dst = Host.Services.GetServices<BaseDatabase>().First(x => x.Name == destination);
 
             string tableName = CreateTable(dst);
@@ -109,7 +109,7 @@ namespace dFakto.States.Workers.Tests
         [InlineData("mariadb")]
         public async Task TestBulkInsertFromCsvFileWithHeader(string destination)
         {
-            var fileStore = Host.Services.GetService<FileStoreFactory>().GetFileStoreFromName("test");
+            var fileStore = Host.Services.GetService<StoreFactory>().GetFileStoreFromName("test");
             var dst = Host.Services.GetServices<BaseDatabase>().First(x => x.Name == destination);
 
             string tableName = CreateTable(dst);

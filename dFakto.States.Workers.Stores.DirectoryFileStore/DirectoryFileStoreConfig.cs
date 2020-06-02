@@ -1,4 +1,4 @@
-namespace dFakto.States.Workers.FileStores.DirectoryFileStore
+namespace dFakto.States.Workers.Stores.DirectoryFileStore
 {
     public class DirectoryFileStoreConfig
     {

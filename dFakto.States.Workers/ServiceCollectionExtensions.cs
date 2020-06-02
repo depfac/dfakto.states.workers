@@ -50,10 +50,10 @@ namespace dFakto.States.Workers
         }
 
         public static IServiceCollection AddFileStores(this IServiceCollection services,
-            FileStoreFactoryConfig fileStoreFactoryConfig)
+            StoreFactoryConfig storeFactoryConfig)
         {
-            services.AddSingleton(fileStoreFactoryConfig);
-            services.AddSingleton<IFileStoreFactory>(x => new FileStoreFactory(x));
+            services.AddSingleton(storeFactoryConfig);
+            services.AddSingleton<IFileStoreFactory>(x => new StoreFactory(x));
             return services;
         }
 

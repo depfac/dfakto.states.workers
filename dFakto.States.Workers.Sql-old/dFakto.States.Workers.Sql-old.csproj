@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Description>SQLWorker to query database or to do massive imports usinh the dFakto.States.Workers framework</Description>
         <Copyright>Vincent DARON &amp; dFakto</Copyright>

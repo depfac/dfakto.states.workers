@@ -7,7 +7,7 @@ using dFakto.States.Workers.Abstractions;
 using FluentFTP;
 using FtpClient = FluentFTP.FtpClient;
 
-namespace dFakto.States.Workers.FileStores.FtpFileStore
+namespace dFakto.States.Workers.Stores.FtpFileStore
 {
     public class FtpFileStore: IFileStore
     {

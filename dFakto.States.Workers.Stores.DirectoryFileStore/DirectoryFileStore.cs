@@ -2,7 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 
-namespace dFakto.States.Workers.FileStores.DirectoryFileStore
+namespace dFakto.States.Workers.Stores.DirectoryFileStore
 {
     public class DirectoryFileStore : IFileStore
     {
