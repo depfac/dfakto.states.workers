@@ -31,16 +31,16 @@ namespace dFakto.States.Workers.Sql
     {
         private readonly ILogger<SqlInsertFromJsonArrayWorker> _logger;
         private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly IFileStoreFactory _fileStoreFactory;
+        private readonly IStoreFactory _storeFactory;
 
-        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger,IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : base(
+        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger,IEnumerable<BaseDatabase> databases, IStoreFactory storeFactory) : base(
             "jsonArrayToSql",
             TimeSpan.FromSeconds(30),
             10)
         {
             _logger = logger;
             _databases = databases;
-            _fileStoreFactory = fileStoreFactory;
+            _storeFactory = storeFactory;
         }
 
         public override async Task<string> DoWorkAsync(SqlInsertFromJsonArrayWorkerInput input, CancellationToken token)
@@ -53,7 +53,7 @@ namespace dFakto.States.Workers.Sql
 
             if (!string.IsNullOrEmpty(input.FileToken))
             {
-                var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.FileToken);
+                var fileStore = _storeFactory.GetFileStoreFromFileToken(input.FileToken);
                 if(fileStore == null)
                 {
                     throw new ArgumentException($"Invalid FileToken '{input.FileToken}'");

@@ -18,13 +18,13 @@ namespace dFakto.States.Workers.Sql
     {
         private readonly ILogger<SqlBulkInsertWorker> _logger;
         private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly IFileStoreFactory _fileStoreFactory;
+        private readonly IStoreFactory _storeFactory;
 
-        public SqlBulkInsertWorker(ILogger<SqlBulkInsertWorker> logger, IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : base("SQLBulkInsert")
+        public SqlBulkInsertWorker(ILogger<SqlBulkInsertWorker> logger, IEnumerable<BaseDatabase> databases, IStoreFactory storeFactory) : base("SQLBulkInsert")
         {
             _logger = logger;
             _databases = databases;
-            _fileStoreFactory = fileStoreFactory;
+            _storeFactory = storeFactory;
         }
 
         public override async Task<bool> DoWorkAsync(BulkInsertInput input, CancellationToken token)
@@ -57,7 +57,7 @@ namespace dFakto.States.Workers.Sql
                 
                 if (input.Source.Query.QueryFileToken != null)
                 {
-                    using(var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.Source.Query.QueryFileToken))
+                    using(var fileStore = _storeFactory.GetFileStoreFromFileToken(input.Source.Query.QueryFileToken))
                     using(Stream stream = await fileStore.OpenRead(input.Source.Query.QueryFileToken))
                     using(StreamReader reader = new StreamReader(stream))
                     {
@@ -72,7 +72,7 @@ namespace dFakto.States.Workers.Sql
             }
             else if(input.Source.FileToken != null)
             {
-                using var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.Source.FileToken);
+                using var fileStore = _storeFactory.GetFileStoreFromFileToken(input.Source.FileToken);
                 tmpFileName = Path.GetTempFileName();
                 
                 _logger.LogDebug($"Copying filetoken '{input.Source.FileToken}' into '{tmpFileName}'");

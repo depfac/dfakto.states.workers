@@ -11,21 +11,21 @@ namespace dFakto.States.Workers.Gzip
     public class GZipWorker : BaseWorker<GZipInput,string>
     {
         private readonly ILogger<GZipWorker> _logger;
-        private readonly IFileStoreFactory _fileStoreFactory;
+        private readonly IStoreFactory _storeFactory;
         private static readonly string GzipExtension = "gz";
-        public GZipWorker(ILogger<GZipWorker> logger,IFileStoreFactory fileStoreFactory)
+        public GZipWorker(ILogger<GZipWorker> logger,IStoreFactory storeFactory)
         :base("GZip")
         {
             _logger = logger;
-            _fileStoreFactory = fileStoreFactory;
+            _storeFactory = storeFactory;
         }
 
         public override async Task<string> DoWorkAsync(GZipInput input, CancellationToken token)
         {
             string outputFileName = input.OutputFileName;
 
-            using var inputFileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.FileToken);
-            using var outputFileStore = string.IsNullOrEmpty(input.OutputFileStoreName) ? inputFileStore :  _fileStoreFactory.GetFileStoreFromName(input.OutputFileStoreName);
+            using var inputFileStore = _storeFactory.GetFileStoreFromFileToken(input.FileToken);
+            using var outputFileStore = string.IsNullOrEmpty(input.OutputFileStoreName) ? inputFileStore :  _storeFactory.GetFileStoreFromName(input.OutputFileStoreName);
 
             if (string.IsNullOrEmpty(outputFileName))
             {

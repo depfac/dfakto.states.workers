@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
@@ -10,9 +9,9 @@ using dFakto.States.Workers.Sql.Common;
 using dFakto.States.Workers.Sql.Exceptions;
 using Microsoft.Extensions.Logging;
 
-namespace dFakto.States.Workers.Sql
+namespace dFakto.States.Workers.SqlQuery
 {
-    public class SqlQueryInput : SqlQuery
+    public class SqlQueryInput : Abstractions.SqlQuery
     {
         public string ConnectionName { get; set; }
     }
@@ -20,19 +19,17 @@ namespace dFakto.States.Workers.Sql
     public class SqlQueryWorker : BaseWorker<SqlQueryInput,SqlQueryOutput>
     {
         private readonly ILogger<SqlQueryWorker> _logger;
-        private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly IFileStoreFactory _fileStoreFactory;
+        private readonly IStoreFactory _storeFactory;
 
-        public SqlQueryWorker(ILogger<SqlQueryWorker> logger, IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : base("SQLQuery")
+        public SqlQueryWorker(ILogger<SqlQueryWorker> logger, IStoreFactory storeFactory) : base("SQLQuery")
         {
             _logger = logger;
-            _databases = databases;
-            _fileStoreFactory = fileStoreFactory;
+            _storeFactory = storeFactory;
         }
 
         public override async Task<SqlQueryOutput> DoWorkAsync(SqlQueryInput input, CancellationToken token)
         {
-            var database = _databases.FirstOrDefault(x => x.Name == input.ConnectionName);
+            var database = _storeFactory.GetDatabaseStoreFromName(input.ConnectionName);
             if (database == null)
             {
                 throw new ArgumentException("Invalid ConnectionName");
@@ -52,7 +49,7 @@ namespace dFakto.States.Workers.Sql
 
             if (input.QueryFileToken != null)
             {
-                using(var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.QueryFileToken))
+                using(var fileStore = _storeFactory.GetFileStoreFromFileToken(input.QueryFileToken))
                 using(Stream stream = await fileStore.OpenRead(input.QueryFileToken))
                 using(StreamReader reader = new StreamReader(stream))
                 {

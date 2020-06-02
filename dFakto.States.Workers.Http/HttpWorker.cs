@@ -15,9 +15,9 @@ namespace dFakto.States.Workers.Http
     {
         private const string JsonMediaType = "application/json";
         private readonly ILogger<HttpWorker> _logger;
-        private readonly IFileStoreFactory _storeFactory;
+        private readonly IStoreFactory _storeFactory;
 
-        public HttpWorker(ILogger<HttpWorker> logger, IFileStoreFactory storeFactory)
+        public HttpWorker(ILogger<HttpWorker> logger, IStoreFactory storeFactory)
             :base("Http", TimeSpan.FromSeconds(8))
         {
             _logger = logger;

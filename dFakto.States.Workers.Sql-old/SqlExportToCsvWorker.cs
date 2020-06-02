@@ -26,16 +26,16 @@ namespace dFakto.States.Workers.Sql
     {
         private readonly ILogger<SqlExportToCsvWorker> _logger;
         private readonly IEnumerable<BaseDatabase> _databases;
-        private readonly IFileStoreFactory _fileStoreFactory;
+        private readonly IStoreFactory _storeFactory;
 
         private static readonly string CsvExtension = "csv";
         
-        public SqlExportToCsvWorker(ILogger<SqlExportToCsvWorker> logger, IEnumerable<BaseDatabase> databases, IFileStoreFactory fileStoreFactory) : 
+        public SqlExportToCsvWorker(ILogger<SqlExportToCsvWorker> logger, IEnumerable<BaseDatabase> databases, IStoreFactory storeFactory) : 
             base("exportToCsv", TimeSpan.FromSeconds(30), 5)
         {
             _logger = logger;
             _databases = databases;
-            _fileStoreFactory = fileStoreFactory;
+            _storeFactory = storeFactory;
         }
 
         public override async Task<string> DoWorkAsync(SqlExportToCsvInput input, CancellationToken token)
@@ -45,7 +45,7 @@ namespace dFakto.States.Workers.Sql
             
             using var reader = await ExecuteQuery(input, connection, token);
             
-            using var outputFileStore = _fileStoreFactory.GetFileStoreFromName(input.OutputFileStoreName);
+            using var outputFileStore = _storeFactory.GetFileStoreFromName(input.OutputFileStoreName);
             string outputFileName = GetOutputFileCsvName(input.OutputFileName);
             string outputFileToken = await outputFileStore.CreateFileToken(outputFileName);
             
@@ -118,7 +118,7 @@ namespace dFakto.States.Workers.Sql
         {
             if (input.QueryFileToken != null)
             {
-                using var fileStore = _fileStoreFactory.GetFileStoreFromFileToken(input.QueryFileToken);
+                using var fileStore = _storeFactory.GetFileStoreFromFileToken(input.QueryFileToken);
                 using Stream stream = await fileStore.OpenRead(input.QueryFileToken);
                 using StreamReader reader = new StreamReader(stream);
                 input.Query = reader.ReadToEnd();

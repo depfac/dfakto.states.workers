@@ -53,7 +53,7 @@ namespace dFakto.States.Workers
             StoreFactoryConfig storeFactoryConfig)
         {
             services.AddSingleton(storeFactoryConfig);
-            services.AddSingleton<IFileStoreFactory>(x => new StoreFactory(x));
+            services.AddSingleton<IStoreFactory>(x => new StoreFactory(x));
             return services;
         }
 
