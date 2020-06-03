@@ -8,7 +8,7 @@ namespace dFakto.States.Workers.Stores.SqlserverDbStore
 {
     public class SqlServerDbStorePlugin : IStorePlugin
     {
-        public string Type => "pgsql";
+        public string Type => "sqlserver";
         
         public IStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
         {

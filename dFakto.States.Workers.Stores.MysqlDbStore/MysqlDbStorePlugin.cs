@@ -6,9 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.Stores.MysqlDbStore
 {
-    public class MysqmDbStorePlugin : IStorePlugin
+    public class MysqlDbStorePlugin : IStorePlugin
     {
-        public string Type => "pgsql";
+        public string Type => "mysql";
         
         public IStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
         {

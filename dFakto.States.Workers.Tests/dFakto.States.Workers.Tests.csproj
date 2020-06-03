@@ -23,6 +23,10 @@
         <ProjectReference Include="..\dFakto.States.Workers.SqlToCsvWorker\dFakto.States.Workers.SqlToCsvWorker.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Stores.DirectoryFileStore\dFakto.States.Workers.Stores.DirectoryFileStore.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Stores.FtpFileStore\dFakto.States.Workers.Stores.FtpFileStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Stores.MysqlDbStore\dFakto.States.Workers.Stores.MysqlDbStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Stores.OracleDbStore\dFakto.States.Workers.Stores.OracleDbStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Stores.PostgresqlDbStore\dFakto.States.Workers.Stores.PostgresqlDbStore.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.Stores.SqlserverDbStore\dFakto.States.Workers.Stores.SqlserverDbStore.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers\dFakto.States.Workers.csproj" />
     </ItemGroup>
 

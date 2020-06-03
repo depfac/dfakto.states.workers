@@ -11,6 +11,10 @@ using dFakto.States.Workers.Stores.FtpFileStore;
 using dFakto.States.Workers.Http;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.Stores.MysqlDbStore;
+using dFakto.States.Workers.Stores.OracleDbStore;
+using dFakto.States.Workers.Stores.PostgresqlDatabaseStore;
+using dFakto.States.Workers.Stores.SqlserverDbStore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -89,6 +93,10 @@ namespace dFakto.States.Workers.Tests
                     //Load plugins statically
                     services.AddSingleton<IStorePlugin>(new DirectoryStoreStorePlugin());
                     services.AddSingleton<IStorePlugin>(new FtpStoreStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new PostgreSqlBbStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new OracleDbStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new SqlServerDbStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new MysqlDbStorePlugin());
                     
                     services.AddStepFunctions(new StepFunctionsConfig
                     {

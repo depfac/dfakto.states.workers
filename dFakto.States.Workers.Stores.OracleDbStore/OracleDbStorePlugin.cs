@@ -8,7 +8,7 @@ namespace dFakto.States.Workers.Stores.OracleDbStore
 {
     public class OracleDbStorePlugin : IStorePlugin
     {
-        public string Type => "pgsql";
+        public string Type => "oracle";
         
         public IStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
         {
