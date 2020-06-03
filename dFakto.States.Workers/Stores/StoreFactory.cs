@@ -4,7 +4,7 @@ using System.Linq;
 using dFakto.States.Workers.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace dFakto.States.Workers.FileStores
+namespace dFakto.States.Workers.Stores
 {
     internal class StoreFactory : IStoreFactory
     {

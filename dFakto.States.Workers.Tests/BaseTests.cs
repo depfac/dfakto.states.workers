@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
-using dFakto.States.Workers.FileStores;
+using dFakto.States.Workers.Gzip;
 using dFakto.States.Workers.Stores.DirectoryFileStore;
 using dFakto.States.Workers.Stores.FtpFileStore;
 using dFakto.States.Workers.Http;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.SqlQuery;
+using dFakto.States.Workers.Stores;
 using dFakto.States.Workers.Stores.MysqlDbStore;
 using dFakto.States.Workers.Stores.OracleDbStore;
 using dFakto.States.Workers.Stores.PostgresqlDatabaseStore;
@@ -57,24 +60,24 @@ namespace dFakto.States.Workers.Tests
                                 Type = DirectoryFileStore.TYPE,
                                 Config = config.GetSection("test")
                             },
-                            new StoreConfig
-                            {
-                                Name = "testftp",
-                                Type = FtpFileStore.TYPE,
-                                Config = config.GetSection("ftptest")
-                            },
+                            // new StoreConfig
+                            // {
+                            //     Name = "testftp",
+                            //     Type = FtpFileStore.TYPE,
+                            //     Config = config.GetSection("ftptest")
+                            // },
                             new StoreConfig
                             {
                                 Name = "pgsql",
                                 Type = "postgresql",
                                 Config = config.GetSection("postgresql")
                             },
-                            new StoreConfig
-                            {
-                                Name = "oracle",
-                                Type = "oracle",
-                                Config = config.GetSection("oracle")
-                            },
+                            // new StoreConfig
+                            // {
+                            //     Name = "oracle",
+                            //     Type = "oracle",
+                            //     Config = config.GetSection("oracle")
+                            // },
                             new StoreConfig
                             {
                                 Name = "sqlserver",
@@ -97,6 +100,14 @@ namespace dFakto.States.Workers.Tests
                     services.AddSingleton<IStorePlugin>(new OracleDbStorePlugin());
                     services.AddSingleton<IStorePlugin>(new SqlServerDbStorePlugin());
                     services.AddSingleton<IStorePlugin>(new MysqlDbStorePlugin());
+
+
+                    services.AddTransient<GZipWorker>();
+                    services.AddTransient<HttpWorker>();
+                    services.AddTransient<SqlBulkInsert.SqlBulkInsertWorker>();
+                    services.AddTransient<SqlQueryWorker>();
+                    services.AddTransient<SqlToCsv.SqlExportToCsvWorker>();
+                    services.AddTransient<SqlInsertFromJson.SqlInsertFromJsonWorker>();
                     
                     services.AddStepFunctions(new StepFunctionsConfig
                     {
@@ -110,7 +121,7 @@ namespace dFakto.States.Workers.Tests
         
         protected void CreateTable(string tableName)
         {
-            foreach (var database in Host.Services.GetServices<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where(x => x is IDbStore).Cast<IDbStore>())
             {
                 var conn = database.CreateConnection();
                 conn.Open();
@@ -124,7 +135,7 @@ namespace dFakto.States.Workers.Tests
         
         protected void Insert(string tableName, params (int,string)[] values)
         {
-            foreach (var database in Host.Services.GetServices<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where(x => x is IDbStore).Cast<IDbStore>())
             {
                 foreach (var value in values)
                 {

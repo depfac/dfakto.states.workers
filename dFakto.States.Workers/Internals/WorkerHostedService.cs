@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.StepFunctions;
 using Amazon.StepFunctions.Model;
 using dFakto.States.Workers.Abstractions;
+using dFakto.States.Workers.Abstractions.Exceptions;
 using dFakto.States.Workers.Config;
 using Microsoft.Extensions.Logging;
 

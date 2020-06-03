@@ -5,8 +5,8 @@ using Amazon.Runtime;
 using Amazon.StepFunctions;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Internals;
+using dFakto.States.Workers.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

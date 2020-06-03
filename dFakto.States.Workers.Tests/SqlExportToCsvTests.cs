@@ -4,10 +4,9 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
-using dFakto.States.Workers.SqlToCsvWorker;
+using dFakto.States.Workers.SqlToCsv;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

@@ -8,10 +8,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
+using dFakto.States.Workers.Abstractions.Sql;
 using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.Logging;
 
-namespace dFakto.States.Workers.SqlBulkInsertWorker
+namespace dFakto.States.Workers.SqlBulkInsert
 {
     public class SqlBulkInsertWorker : BaseWorker<BulkInsertInput,bool>
     {

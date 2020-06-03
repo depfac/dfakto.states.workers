@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Abstractions.Exceptions;
-using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.Abstractions.Sql;
 using Microsoft.Extensions.Logging;
 
-namespace dFakto.States.Workers.SqlToCsvWorker
+namespace dFakto.States.Workers.SqlToCsv
 {
     public class SqlExportToCsvInput: SqlQuery
     {

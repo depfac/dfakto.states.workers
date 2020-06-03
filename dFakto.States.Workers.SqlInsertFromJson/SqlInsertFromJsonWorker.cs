@@ -13,12 +13,19 @@ namespace dFakto.States.Workers.SqlInsertFromJson
 {
     public class SqlInsertFromJsonWorkerInput
     {
+        public SqlInsertFromJsonWorkerInput()
+        {
+            Columns = new  Dictionary<string, string>();
+        }
         public string ConnectionName { get; set; }
         public string TableName { get; set; }
         public string SchemaName { get; set; }
         public string FileToken { get; set; }
         public JsonElement Json { get; set; }
         public string JsonColumn { get; set; }
+        /// <summary>
+        /// Key is the column Name and Value is the property to retrieve from Json element
+        /// </summary>
         public Dictionary<string,string> Columns { get; set; }
     }
     
@@ -72,9 +79,20 @@ namespace dFakto.States.Workers.SqlInsertFromJson
                 default:
                     throw new ArgumentException($"Invalid Input Json '{input.Json.ValueKind}', must be an Array or an Object");
             }
+
+            if (values.Count == 0)
+            {
+                return "No values in input";
+            }
             
             _logger.LogInformation($"Inserting {values.Count} value(s) into {input.ConnectionName}:{input.SchemaName}.{input.TableName}");
 
+            // Initialize default columns with all field if none are specified 
+            if (input.Columns.Count == 0)
+            {
+                input.Columns = values.First().EnumerateObject().ToDictionary(x => x.Name, x => x.Name);
+            }
+            
             await using DbConnection connection = database.CreateConnection();
             await connection.OpenAsync(token);
 
@@ -84,7 +102,7 @@ namespace dFakto.States.Workers.SqlInsertFromJson
             foreach (var keyValue in values)
             {
                 cmd.Parameters.Clear();
-                
+
                 if (!string.IsNullOrEmpty(input.JsonColumn))
                 {
                     var jsonP = database.CreateJsonParameter(cmd, "@js", keyValue.ToString());
@@ -96,7 +114,7 @@ namespace dFakto.States.Workers.SqlInsertFromJson
                 {
                     var jsonP = cmd.CreateParameter();
                     jsonP.ParameterName = "@p"+index++;
-                    jsonP.Value = GetPropertyValue(keyValue, col.Value);
+                    jsonP.Value = GetPropertyValue(keyValue.GetProperty(col.Value));
                     cmd.Parameters.Add(jsonP);
                 }
                 
@@ -107,20 +125,19 @@ namespace dFakto.States.Workers.SqlInsertFromJson
             return cmd.CommandText;
         }
 
-        private static object GetPropertyValue(in JsonElement inputJson, string colValue)
+        private static object GetPropertyValue(in JsonElement property)
         {
-            var p = inputJson.GetProperty(colValue);
-            switch (p.ValueKind)
+            switch (property.ValueKind)
             {
                 case JsonValueKind.Null:
                 case JsonValueKind.Undefined:
-                    return null;
+                    return DBNull.Value;
                 case JsonValueKind.Object:
                 case JsonValueKind.Array:
                 case JsonValueKind.String:
-                    return p.ToString();
+                    return property.ToString();
                 case JsonValueKind.Number:
-                    return p.GetDecimal();
+                    return property.GetDecimal();
                 case JsonValueKind.True:
                     return true;
                 case JsonValueKind.False:
@@ -140,6 +157,7 @@ namespace dFakto.States.Workers.SqlInsertFromJson
             }
 
             query.Append(input.TableName);
+            
             query.Append(" (");
 
             //Add JsonColumn if exists
@@ -150,6 +168,7 @@ namespace dFakto.States.Workers.SqlInsertFromJson
 
             // Add Other columns if any
             bool first = string.IsNullOrEmpty(input.JsonColumn);
+
             foreach (var addCOl in input.Columns)
             {
                 if (!first)

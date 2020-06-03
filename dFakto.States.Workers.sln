@@ -31,11 +31,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Store
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlQuery", "dFakto.States.Workers.SqlQuery\dFakto.States.Workers.SqlQuery.csproj", "{0673B2CE-7F62-44D2-AD03-EFE8EDF3F254}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlBulkInsertWorker", "dFakto.States.Workers.SqlBulkInsertWorker\dFakto.States.Workers.SqlBulkInsertWorker.csproj", "{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlBulkInsert", "dFakto.States.Workers.SqlBulkInsert\dFakto.States.Workers.SqlBulkInsert.csproj", "{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlInsertFromJson", "dFakto.States.Workers.SqlInsertFromJson\dFakto.States.Workers.SqlInsertFromJson.csproj", "{C01EEB60-D091-4AF1-A871-1CE783C94A9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlToCsvWorker", "dFakto.States.Workers.SqlToCsvWorker\dFakto.States.Workers.SqlToCsvWorker.csproj", "{1DE290E3-A3DA-4547-998C-69846F8F4C71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlToCsv", "dFakto.States.Workers.SqlToCsv\dFakto.States.Workers.SqlToCsv.csproj", "{1DE290E3-A3DA-4547-998C-69846F8F4C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

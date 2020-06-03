@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;

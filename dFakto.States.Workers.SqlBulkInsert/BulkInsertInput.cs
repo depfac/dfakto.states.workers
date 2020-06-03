@@ -1,5 +1,5 @@
 
-using dFakto.States.Workers.SqlBulkInsertWorker;
+using dFakto.States.Workers.SqlBulkInsert;
 
 namespace dFakto.States.Workers.Sql.Common
 {

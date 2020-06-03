@@ -5,13 +5,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.Abstractions.Sql;
 using dFakto.States.Workers.Sql.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.SqlQuery
 {
-    public class SqlQueryInput : Abstractions.SqlQuery
+    public class SqlQueryInput : Abstractions.Sql.SqlQuery
     {
         public string ConnectionName { get; set; }
     }

@@ -7,7 +7,6 @@
         <PackageId>dFakto.States.Workers.BaseHost</PackageId>
         <Authors>dFakto.States.Workers.BaseHost</Authors>
         <Product>dFakto.States.Workers.BaseHost</Product>
-        <AssemblyName>dFakto.States.Workers.BaseHost</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,7 +28,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\dFakto.States.Workers.Abstractions\dFakto.States.Workers.Abstractions.csproj" />
-      <ProjectReference Include="..\dFakto.States.Workers.Sql-old\dFakto.States.Workers.Sql-old.csproj" />
     </ItemGroup>
 
     <ItemGroup>

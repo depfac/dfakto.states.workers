@@ -3,11 +3,11 @@ using System.Data;
 using System.Data.Common;
 using System.Text.Json;
 
-namespace dFakto.States.Workers.Sql.Common
+namespace dFakto.States.Workers.Abstractions.Sql
 {
     public static class DbConnectionExtensions
     {
-        public static DbCommand CreateCommand(this DbConnection connection, Abstractions.SqlQuery input)
+        public static DbCommand CreateCommand(this DbConnection connection, SqlQuery input)
         {
             var cmd = connection.CreateCommand();
             cmd.CommandText = input.Query;

@@ -1,4 +1,4 @@
-namespace dFakto.States.Workers.Abstractions
+namespace dFakto.States.Workers.Abstractions.Sql
 {
     public class SqlQuery
     {

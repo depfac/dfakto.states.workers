@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace dFakto.States.Workers.Abstractions
+namespace dFakto.States.Workers.Abstractions.Exceptions
 {
    [Serializable]
    public class WorkerException : Exception

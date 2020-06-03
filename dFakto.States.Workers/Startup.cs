@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 using Amazon.StepFunctions;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
-using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Internals;
 using dFakto.States.Workers.Sql;
-using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.Stores;
 using McMaster.NETCore.Plugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +16,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace dFakto.States.Workers.BaseHost
 {
@@ -40,9 +41,8 @@ namespace dFakto.States.Workers.BaseHost
         {
             services.AddOptions();
 
-            services.AddStores(Configuration.GetSection("fileStores").Get<StoreFactoryConfig>());
+            services.AddStores(Configuration.GetSection("Stores").Get<StoreFactoryConfig>());
 
-            
             ConfigurePlugins(_plugins, services);
 
             services.AddStepFunctions(Configuration.GetSection("stepFunctions").Get<StepFunctionsConfig>());
@@ -74,20 +74,33 @@ namespace dFakto.States.Workers.BaseHost
 
             // create plugin loaders
             var pluginsDir = Path.Combine(AppContext.BaseDirectory, "plugins");
+            
+            Log.Logger.Information($"Loading Plugins from directory '{pluginsDir}'");
+            
             foreach (var dir in Directory.GetDirectories(pluginsDir))
             {
                 var dirName = Path.GetFileName(dir);
                 var pluginDll = Path.Combine(dir, dirName + ".dll");
                 if (File.Exists(pluginDll))
                 {
+                    Log.Logger.Information($"Loading Plugin '{pluginDll}'");
+                    
                     var loader = PluginLoader.CreateFromAssemblyFile(
                         pluginDll,
                         new[] { 
                             typeof(IPlugin),
                             typeof(ILogger),
                             typeof(IStorePlugin),
+                            typeof(IStoreFactory),
+                            typeof(StoreFactory),
+                            typeof(StoreFactoryConfig),
+                            typeof(StoreConfig),
+                            typeof(IStore),
+                            typeof(IDbStore),
                             typeof(IFileStore),
-                            typeof(IServiceCollection)});
+                            typeof(IServiceCollection),
+                            typeof(IServiceProvider)
+                        });
                     loaders.Add(loader);
                 }
             }
@@ -122,15 +135,13 @@ namespace dFakto.States.Workers.BaseHost
                     if (typeof(IWorker).IsAssignableFrom(pluginType))
                     {
                         services.AddTransient(pluginType);
-                        services.AddTransient<IHostedService>(x => new WorkerHostedService(
+                        services.AddSingleton<IHostedService>(x => new WorkerHostedService(
                             (IWorker) x.GetService(pluginType),
                             x.GetService<IHeartbeatManager>(),
                             x.GetService<StepFunctionsConfig>(),
                             x.GetService<AmazonStepFunctionsClient>(),
                             x.GetService<ILoggerFactory>()));
                     }
-
-
                 }
             }
         }

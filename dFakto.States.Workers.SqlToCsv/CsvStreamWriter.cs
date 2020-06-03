@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace dFakto.States.Workers.SqlToCsvWorker
+namespace dFakto.States.Workers.SqlToCsv
 {
     public class CsvStreamWriter
     {

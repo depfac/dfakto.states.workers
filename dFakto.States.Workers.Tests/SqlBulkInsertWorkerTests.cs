@@ -6,9 +6,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.FileStores;
+using dFakto.States.Workers.Abstractions.Sql;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.SqlBulkInsert;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace dFakto.States.Workers.Tests
         [InlineData("mariadb", "mariadb")]
         public async Task TestBulkInsertFromQuery(string source, string destination)
         {
-            var sql = Host.Services.GetService<SqlBulkInsertWorker.SqlBulkInsertWorker>();
+            var sql = Host.Services.GetService<SqlBulkInsert.SqlBulkInsertWorker>();
             var src = Host.Services.GetService<IStoreFactory>().GetDatabaseStoreFromName(source);
             var dst = Host.Services.GetService<IStoreFactory>().GetDatabaseStoreFromName(destination);
 
@@ -43,7 +44,7 @@ namespace dFakto.States.Workers.Tests
             {
                 var input = new BulkInsertInput();
                 input.Source.ConnectionName = source;
-                input.Source.Query = new Abstractions.SqlQuery
+                input.Source.Query = new Abstractions.Sql.SqlQuery
                 {
                     Query = $"SELECT * FROM {tableSrc}",
                     Type = SqlQueryType.Reader
@@ -91,7 +92,7 @@ namespace dFakto.States.Workers.Tests
                 input.Destination.ConnectionName = destination;
                 input.Destination.TableName = tableName;
 
-                var sql = Host.Services.GetService<SqlBulkInsertWorker.SqlBulkInsertWorker>();
+                var sql = Host.Services.GetService<SqlBulkInsertWorker>();
 
                 var result = await sql.DoJsonWork<BulkInsertInput,bool>(input);
 
@@ -134,7 +135,7 @@ namespace dFakto.States.Workers.Tests
                 input.Destination.ConnectionName = destination;
                 input.Destination.TableName = tableName;
 
-                var sql = Host.Services.GetService<SqlBulkInsertWorker.SqlBulkInsertWorker>();
+                var sql = Host.Services.GetService<SqlBulkInsertWorker>();
 
                 var result = await sql.DoJsonWork<BulkInsertInput,bool>(input);
 

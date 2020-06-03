@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
+using dFakto.States.Workers.Abstractions.Sql;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
 using dFakto.States.Workers.SqlQuery;

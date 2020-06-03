@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
+using dFakto.States.Workers.Abstractions.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.Http

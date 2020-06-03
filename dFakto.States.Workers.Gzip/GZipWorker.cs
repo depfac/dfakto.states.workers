@@ -13,8 +13,7 @@ namespace dFakto.States.Workers.Gzip
         private readonly ILogger<GZipWorker> _logger;
         private readonly IStoreFactory _storeFactory;
         private static readonly string GzipExtension = "gz";
-        public GZipWorker(ILogger<GZipWorker> logger,IStoreFactory storeFactory)
-        :base("GZip")
+        public GZipWorker(ILogger<GZipWorker> logger, IStoreFactory storeFactory) :base("GZip")
         {
             _logger = logger;
             _storeFactory = storeFactory;

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace dFakto.States.Workers.SqlBulkInsertWorker
+namespace dFakto.States.Workers.SqlBulkInsert
 {
 	internal class CsvStreamReader : IDisposable
 	{

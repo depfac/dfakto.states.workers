@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace dFakto.States.Workers.FileStores
+namespace dFakto.States.Workers.Stores
 {
     public class StoreConfig
     {
