@@ -3,7 +3,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 
-namespace dFakto.States.Workers.Sql.Csv
+namespace dFakto.States.Workers.SqlBulkInsertWorker
 {
 	internal class CsvDataReader : IDataReader
 	{

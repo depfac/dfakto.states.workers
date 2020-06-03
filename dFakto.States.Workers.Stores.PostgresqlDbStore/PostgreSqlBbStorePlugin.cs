@@ -7,7 +7,7 @@ namespace dFakto.States.Workers.Stores.PostgresqlDatabaseStore
 {
     public class PostgreSqlBbStorePlugin : IStorePlugin
     {
-        public string Type => "pgsql";
+        public string Type => "postgresql";
         
         public IStore CreateInstance(IServiceProvider serviceProvider, string name, IConfigurationSection configurationSection)
         {

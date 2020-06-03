@@ -9,21 +9,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Sql.Common;
-using dFakto.States.Workers.Sql.Csv;
 using Microsoft.Extensions.Logging;
 
-namespace dFakto.States.Workers.Sql
+namespace dFakto.States.Workers.SqlBulkInsertWorker
 {
     public class SqlBulkInsertWorker : BaseWorker<BulkInsertInput,bool>
     {
         private readonly ILogger<SqlBulkInsertWorker> _logger;
-        private readonly IEnumerable<BaseDatabase> _databases;
         private readonly IStoreFactory _storeFactory;
 
-        public SqlBulkInsertWorker(ILogger<SqlBulkInsertWorker> logger, IEnumerable<BaseDatabase> databases, IStoreFactory storeFactory) : base("SQLBulkInsert")
+        public SqlBulkInsertWorker(ILogger<SqlBulkInsertWorker> logger, IStoreFactory storeFactory) : base("SQLBulkInsert")
         {
             _logger = logger;
-            _databases = databases;
             _storeFactory = storeFactory;
         }
 
@@ -31,7 +28,7 @@ namespace dFakto.States.Workers.Sql
         {
             string tmpFileName = null;
             
-            var destinationDatabase = _databases.FirstOrDefault(x => x.Name == input.Destination.ConnectionName);
+            var destinationDatabase = _storeFactory.GetDatabaseStoreFromName(input.Destination.ConnectionName);
             if (destinationDatabase == null)
             {
                 throw new ArgumentException("Invalid Destination ConnectionName");
@@ -49,7 +46,7 @@ namespace dFakto.States.Workers.Sql
             if (!string.IsNullOrEmpty(input.Source.ConnectionName))
             {
                 _logger.LogDebug($"Quering '{input.Source.ConnectionName}' as source");
-                var sourceDatabase = _databases.FirstOrDefault(x => x.Name == input.Source.ConnectionName);
+                var sourceDatabase = _storeFactory.GetDatabaseStoreFromName(input.Source.ConnectionName);
                 if (sourceDatabase == null)
                 {
                     throw new ArgumentException("Invalid Source ConnectionName");

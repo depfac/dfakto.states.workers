@@ -2,7 +2,7 @@
 using System.Data;
 using System.Globalization;
 
-namespace dFakto.States.Workers
+namespace dFakto.States.Workers.SqlToCsvWorker
 {
 	public static class UtilExtensions
 	{

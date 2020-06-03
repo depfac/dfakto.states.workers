@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dFakto.States.Workers", "dFakto.States.Workers\dFakto.States.Workers.csproj", "{12429588-F4B8-4D56-954D-A586DCA08963}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dFakto.States.Workers.Sql-old", "dFakto.States.Workers.Sql-old\dFakto.States.Workers.Sql-old.csproj", "{32B94B61-9587-4A3D-A6A9-3990F6606D03}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dFakto.States.Workers.Tests", "dFakto.States.Workers.Tests\dFakto.States.Workers.Tests.csproj", "{A5256C96-A238-4994-9251-60662AE4ADAB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stores", "Stores", "{8D4DFB6D-5625-4BF7-99B5-35254872895D}"
@@ -33,6 +31,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.Store
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlQuery", "dFakto.States.Workers.SqlQuery\dFakto.States.Workers.SqlQuery.csproj", "{0673B2CE-7F62-44D2-AD03-EFE8EDF3F254}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlBulkInsertWorker", "dFakto.States.Workers.SqlBulkInsertWorker\dFakto.States.Workers.SqlBulkInsertWorker.csproj", "{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlInsertFromJson", "dFakto.States.Workers.SqlInsertFromJson\dFakto.States.Workers.SqlInsertFromJson.csproj", "{C01EEB60-D091-4AF1-A871-1CE783C94A9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dFakto.States.Workers.SqlToCsvWorker", "dFakto.States.Workers.SqlToCsvWorker\dFakto.States.Workers.SqlToCsvWorker.csproj", "{1DE290E3-A3DA-4547-998C-69846F8F4C71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,10 +47,6 @@ Global
 		{12429588-F4B8-4D56-954D-A586DCA08963}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12429588-F4B8-4D56-954D-A586DCA08963}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12429588-F4B8-4D56-954D-A586DCA08963}.Release|Any CPU.Build.0 = Release|Any CPU
-		{32B94B61-9587-4A3D-A6A9-3990F6606D03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{32B94B61-9587-4A3D-A6A9-3990F6606D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{32B94B61-9587-4A3D-A6A9-3990F6606D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{32B94B61-9587-4A3D-A6A9-3990F6606D03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5256C96-A238-4994-9251-60662AE4ADAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5256C96-A238-4994-9251-60662AE4ADAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5256C96-A238-4994-9251-60662AE4ADAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -91,6 +91,18 @@ Global
 		{0673B2CE-7F62-44D2-AD03-EFE8EDF3F254}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0673B2CE-7F62-44D2-AD03-EFE8EDF3F254}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0673B2CE-7F62-44D2-AD03-EFE8EDF3F254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C01EEB60-D091-4AF1-A871-1CE783C94A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C01EEB60-D091-4AF1-A871-1CE783C94A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C01EEB60-D091-4AF1-A871-1CE783C94A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C01EEB60-D091-4AF1-A871-1CE783C94A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE290E3-A3DA-4547-998C-69846F8F4C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE290E3-A3DA-4547-998C-69846F8F4C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE290E3-A3DA-4547-998C-69846F8F4C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE290E3-A3DA-4547-998C-69846F8F4C71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,5 +120,8 @@ Global
 		{B5AA8545-7346-4EB8-82FD-36237EFB4741} = {8D4DFB6D-5625-4BF7-99B5-35254872895D}
 		{BB739663-6D01-4F61-8EF0-A8807EEE282B} = {8D4DFB6D-5625-4BF7-99B5-35254872895D}
 		{0673B2CE-7F62-44D2-AD03-EFE8EDF3F254} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
+		{E057D9D6-5C64-4F6C-9BD0-5FA69BD3445B} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
+		{C01EEB60-D091-4AF1-A871-1CE783C94A9C} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
+		{1DE290E3-A3DA-4547-998C-69846F8F4C71} = {A5668192-607E-4F8C-AF39-31BE7E187AE1}
 	EndGlobalSection
 EndGlobal

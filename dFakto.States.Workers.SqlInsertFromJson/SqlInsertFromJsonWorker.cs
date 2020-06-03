@@ -7,12 +7,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.Sql.Common;
 using Microsoft.Extensions.Logging;
-using Npgsql;
-using NpgsqlTypes;
 
-namespace dFakto.States.Workers.Sql
+namespace dFakto.States.Workers.SqlInsertFromJson
 {
     public class SqlInsertFromJsonArrayWorkerInput
     {
@@ -21,31 +18,27 @@ namespace dFakto.States.Workers.Sql
         public string SchemaName { get; set; }
         public string FileToken { get; set; }
         public JsonElement Json { get; set; }
-        
         public string JsonColumn { get; set; }
-        
         public Dictionary<string,string> Columns { get; set; }
     }
     
     public class SqlInsertFromJsonArrayWorker : BaseWorker<SqlInsertFromJsonArrayWorkerInput,string>
     {
         private readonly ILogger<SqlInsertFromJsonArrayWorker> _logger;
-        private readonly IEnumerable<BaseDatabase> _databases;
         private readonly IStoreFactory _storeFactory;
 
-        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger,IEnumerable<BaseDatabase> databases, IStoreFactory storeFactory) : base(
-            "jsonArrayToSql",
+        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger, IStoreFactory storeFactory) : base(
+            "sqlInsertFromJson",
             TimeSpan.FromSeconds(30),
             10)
         {
             _logger = logger;
-            _databases = databases;
             _storeFactory = storeFactory;
         }
 
         public override async Task<string> DoWorkAsync(SqlInsertFromJsonArrayWorkerInput input, CancellationToken token)
         {
-            var database = _databases.FirstOrDefault(x => x.Name == input.ConnectionName);
+            var database = _storeFactory.GetDatabaseStoreFromName(input.ConnectionName);
             if (database == null)
             {
                 throw new ArgumentException($"Invalid ConnectionName '{input.ConnectionName}'");
@@ -66,33 +59,35 @@ namespace dFakto.States.Workers.Sql
                 }
             }
 
-            if (input.Json.ValueKind != JsonValueKind.Array)
+            var values = new List<JsonElement>();
+            
+            switch (input.Json.ValueKind)
             {
-                throw new ArgumentException($"Invalid Input Json '{input.Json.ValueKind}', must be an array");
+                case JsonValueKind.Array:
+                    values.AddRange(input.Json.EnumerateArray());
+                    break;
+                case JsonValueKind.Object:
+                    values.Add(input.Json);
+                    break;
+                default:
+                    throw new ArgumentException($"Invalid Input Json '{input.Json.ValueKind}', must be an Array or an Object");
             }
             
-            _logger.LogInformation($"Inserting values from input into {input.ConnectionName}:{input.SchemaName}.{input.TableName}");
-            
-            using DbConnection connection = database.CreateConnection();
+            _logger.LogInformation($"Inserting {values.Count} value(s) into {input.ConnectionName}:{input.SchemaName}.{input.TableName}");
+
+            await using DbConnection connection = database.CreateConnection();
             await connection.OpenAsync(token);
-            var cmd = connection.CreateCommand();
+
+            await using var cmd = connection.CreateCommand();
             cmd.CommandText = GetInsertQuery(input);
             
-            foreach (var keyValue in  input.Json.EnumerateArray())
+            foreach (var keyValue in values)
             {
                 cmd.Parameters.Clear();
                 
                 if (!string.IsNullOrEmpty(input.JsonColumn))
                 {
-                    var jsonP = cmd.CreateParameter();
-                    jsonP.ParameterName = "@js";
-                    jsonP.Value = keyValue.ToString();
-
-                    if (jsonP is NpgsqlParameter p)
-                    {
-                        p.NpgsqlDbType = NpgsqlDbType.Jsonb;
-                    }
-                    
+                    var jsonP = database.CreateJsonParameter(cmd, "@js", keyValue.ToString());
                     cmd.Parameters.Add(jsonP);
                 }
                 

@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Sql.PostgreSQL;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace dFakto.States.Workers.Stores.PostgresqlDatabaseStore
 {
@@ -24,6 +26,20 @@ namespace dFakto.States.Workers.Stores.PostgresqlDatabaseStore
         public DbConnection CreateConnection()
         {
             return new NpgsqlConnection(_config.ConnectionString);
+        }
+        
+        public DbParameter CreateJsonParameter(DbCommand command, string parameterName, string value)
+        {
+            if (!(command is NpgsqlCommand c))
+            {
+                throw new InvalidCastException("Command must be an NpgsqlCommand");
+            }
+            c = command as NpgsqlCommand;
+            var p = c.CreateParameter();
+            p.ParameterName = parameterName;
+            p.Value = value;
+            p.NpgsqlDbType = NpgsqlDbType.Jsonb;
+            return p;
         }
 
         public async Task BulkInsert(IDataReader reader, string schemaName, string tableName, int timeout, CancellationToken token)

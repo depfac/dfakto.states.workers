@@ -1,4 +1,6 @@
 
+using dFakto.States.Workers.SqlBulkInsertWorker;
+
 namespace dFakto.States.Workers.Sql.Common
 {
     public class BulkInsertInput

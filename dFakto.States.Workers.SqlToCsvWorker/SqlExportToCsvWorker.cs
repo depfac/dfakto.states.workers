@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
+using dFakto.States.Workers.Abstractions.Exceptions;
 using dFakto.States.Workers.Sql.Common;
-using dFakto.States.Workers.Sql.Csv;
-using dFakto.States.Workers.Sql.Exceptions;
 using Microsoft.Extensions.Logging;
 
-namespace dFakto.States.Workers.Sql
+namespace dFakto.States.Workers.SqlToCsvWorker
 {
     public class SqlExportToCsvInput: SqlQuery
     {
@@ -25,22 +23,20 @@ namespace dFakto.States.Workers.Sql
     public class SqlExportToCsvWorker: BaseWorker<SqlExportToCsvInput, string>
     {
         private readonly ILogger<SqlExportToCsvWorker> _logger;
-        private readonly IEnumerable<BaseDatabase> _databases;
         private readonly IStoreFactory _storeFactory;
 
         private static readonly string CsvExtension = "csv";
         
-        public SqlExportToCsvWorker(ILogger<SqlExportToCsvWorker> logger, IEnumerable<BaseDatabase> databases, IStoreFactory storeFactory) : 
+        public SqlExportToCsvWorker(ILogger<SqlExportToCsvWorker> logger, IStoreFactory storeFactory) : 
             base("exportToCsv", TimeSpan.FromSeconds(30), 5)
         {
             _logger = logger;
-            _databases = databases;
             _storeFactory = storeFactory;
         }
 
         public override async Task<string> DoWorkAsync(SqlExportToCsvInput input, CancellationToken token)
         {
-            using var connection = CreateConnection(input, token);
+            using var connection = CreateConnection(input);
             await OpenConnection(connection, token);
             
             using var reader = await ExecuteQuery(input, connection, token);
@@ -58,9 +54,9 @@ namespace dFakto.States.Workers.Sql
             return outputFileToken;
         }
 
-        private DbConnection CreateConnection(SqlExportToCsvInput input, CancellationToken token)
+        private DbConnection CreateConnection(SqlExportToCsvInput input)
         {
-            BaseDatabase database = GetDataBase(input.ConnectionName, true);
+            IDbStore database = GetDataBase(input.ConnectionName, true);
             return database.CreateConnection();
         }
 
@@ -90,9 +86,9 @@ namespace dFakto.States.Workers.Sql
                 .ToArray();
         }
 
-        private BaseDatabase GetDataBase(string connectionName, bool throwExceptionIfNotExists = false)
+        private IDbStore GetDataBase(string connectionName, bool throwExceptionIfNotExists = false)
         {
-            BaseDatabase toReturn = _databases.FirstOrDefault(x => x.Name == connectionName);
+            IDbStore toReturn = _storeFactory.GetDatabaseStoreFromName(connectionName);
             if (toReturn == null && throwExceptionIfNotExists)
             {
                 throw new ArgumentException($"Invalid ConnectionName '{connectionName}'");

@@ -1,5 +1,7 @@
+using System;
 using System.Data;
 using System.Data.Common;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
@@ -22,6 +24,22 @@ namespace dFakto.States.Workers.Stores.SqlserverDbStore
         public DbConnection CreateConnection()
         {
             return new SqlConnection(_config.ConnectionString);
+        }
+
+        public DbParameter CreateJsonParameter(DbCommand command, string parameterName, string value)
+        {
+            if (!(command is SqlCommand c))
+            {
+                throw new InvalidCastException("Command must be an SqlCommand");
+            }
+
+            var p = c.CreateParameter();
+            p.ParameterName = parameterName;
+            p.Value = value;
+            p.SqlDbType = SqlDbType.NText;
+
+            return p;
+
         }
 
         public async Task BulkInsert(IDataReader reader, string schemaName, string tableName, int timeout, CancellationToken token)

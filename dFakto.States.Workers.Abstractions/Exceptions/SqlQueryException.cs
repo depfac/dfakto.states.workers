@@ -1,7 +1,6 @@
 using System;
-using dFakto.States.Workers.Abstractions;
 
-namespace dFakto.States.Workers.Sql.Exceptions
+namespace dFakto.States.Workers.Abstractions.Exceptions
 {
     public class SqlQueryException : WorkerException
     {

@@ -1,6 +1,6 @@
-using System;
+using dFakto.States.Workers.Abstractions;
 
-namespace dFakto.States.Workers.Sql.Common
+namespace dFakto.States.Workers.SqlBulkInsertWorker
 {
     public class BulkInsertSource
     {

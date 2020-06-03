@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
@@ -25,6 +26,21 @@ namespace dFakto.States.Workers.Stores.MysqlDbStore
         {
             //MySQL Server, the connection string must have AllowLoadLocalInfile=true
             return new MySqlConnection(_config.ConnectionString);
+        }
+        
+        public DbParameter CreateJsonParameter(DbCommand command, string parameterName, string value)
+        {
+            if (!(command is MySqlCommand c))
+            {
+                throw new InvalidCastException("Command must be an OracleCommand");
+            }
+
+            var p = c.CreateParameter();
+            p.ParameterName = parameterName;
+            p.Value = value;
+            p.MySqlDbType = MySqlDbType.LongText;
+            return p;
+
         }
 
         public async Task BulkInsert(IDataReader reader, string schemaName, string tableName, int timeout, CancellationToken token)

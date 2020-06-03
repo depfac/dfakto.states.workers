@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
@@ -19,6 +20,21 @@ namespace dFakto.States.Workers.Stores.OracleDbStore
             _name = name;
             _config = config;
             _logger = logger;
+        }
+        
+        public DbParameter CreateJsonParameter(DbCommand command, string parameterName, string value)
+        {
+            if (!(command is OracleCommand c))
+            {
+                throw new InvalidCastException("Command must be an OracleCommand");
+            }
+
+            var p = c.CreateParameter();
+            p.ParameterName = parameterName;
+            p.Value = value;
+            p.OracleDbType = OracleDbType.Blob;
+            return p;
+
         }
         
         public DbConnection CreateConnection()
