@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.SqlToCsvWorker;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -14,10 +17,10 @@ namespace dFakto.States.Workers.Tests
     {
         private readonly string _tableName = StringUtils.Random(10);
         
-        private readonly StoreFactory _storeFactory;
+        private readonly IStoreFactory _storeFactory;
         public SqlExportToCsvTests()
         {
-            _storeFactory = Host.Services.GetService<StoreFactory>();
+            _storeFactory = Host.Services.GetService<IStoreFactory>();
             CreateTable(_tableName);
         }
         
@@ -27,7 +30,7 @@ namespace dFakto.States.Workers.Tests
             Insert(_tableName, (1, "hello"), (2,"world"));
             SqlExportToCsvWorker worker = Host.Services.GetService<SqlExportToCsvWorker>();
 
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore))
             {
                 var input = new SqlExportToCsvInput
                 {
@@ -55,7 +58,7 @@ namespace dFakto.States.Workers.Tests
             
             SqlExportToCsvWorker worker = Host.Services.GetService<SqlExportToCsvWorker>();
 
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore))
             {
                 var input = new SqlExportToCsvInput
                 {

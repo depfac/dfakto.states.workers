@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
+using dFakto.States.Workers.SqlInsertFromJson;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -16,20 +19,20 @@ namespace dFakto.States.Workers.Tests
         [Fact]
         public async Task TestSqlInsertFromJsonArrayWorker()
         {
-            var sql = Host.Services.GetService<SqlInsertFromJsonArrayWorker>();
+            var sql = Host.Services.GetService<SqlInsertFromJsonWorker>();
 
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var tableName = CreateTable(database);
                 
-                var input = new SqlInsertFromJsonArrayWorkerInput();
+                var input = new SqlInsertFromJsonWorkerInput();
                 input.ConnectionName = database.Name;
                 input.TableName = tableName;
                 input.Json = JsonDocument.Parse(SampleJson).RootElement;
                 input.JsonColumn = "json";
                 input.Columns = new Dictionary<string, string>{{"col1","id"},{"col2","contract_time"},{"firstname","firstname"}};
                 
-                var output = await sql.DoJsonWork<SqlInsertFromJsonArrayWorkerInput,string>(input);
+                var output = await sql.DoJsonWork<SqlInsertFromJsonWorkerInput,string>(input);
                 
                 Assert.Equal(2,CountTable(database,tableName));
                 
@@ -37,7 +40,7 @@ namespace dFakto.States.Workers.Tests
             }
         }
         
-        private string CreateTable(BaseDatabase database)
+        private string CreateTable(IDbStore database)
         {
             var tableName = StringUtils.Random(10);
             using var conn = database.CreateConnection();
@@ -51,7 +54,7 @@ namespace dFakto.States.Workers.Tests
             return tableName;
         }
         
-        private void DropTable(BaseDatabase database, string tableName)
+        private void DropTable(IDbStore database, string tableName)
         {
             using var conn = database.CreateConnection();
             conn.Open();
@@ -62,7 +65,7 @@ namespace dFakto.States.Workers.Tests
             }
         }
         
-        private long CountTable(BaseDatabase database, string tableName)
+        private long CountTable(IDbStore database, string tableName)
         {
             using var conn = database.CreateConnection();
             conn.Open();

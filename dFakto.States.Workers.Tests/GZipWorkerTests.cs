@@ -16,10 +16,10 @@ namespace dFakto.States.Workers.Tests
     {
         private const string Content = "Hello world";
 
-        private readonly StoreFactory _storeFactory;
+        private readonly IStoreFactory _storeFactory;
         public GZipWorkerTests()
         {
-            _storeFactory = Host.Services.GetService<StoreFactory>();
+            _storeFactory = Host.Services.GetService<IStoreFactory>();
         }
         
         [Theory]

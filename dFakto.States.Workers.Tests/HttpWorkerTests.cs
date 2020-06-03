@@ -24,11 +24,11 @@ namespace dFakto.States.Workers.Tests
         {
             public int IntTest { get; set; } = 33;
         }
-        private readonly StoreFactory _storeFactory;
+        private readonly IStoreFactory _storeFactory;
 
         public HttpWorkerTests()
         {
-            _storeFactory = Host.Services.GetService<StoreFactory>();
+            _storeFactory = Host.Services.GetService<IStoreFactory>();
         }
 
         private string GetFileTokenContent(string fileToken)

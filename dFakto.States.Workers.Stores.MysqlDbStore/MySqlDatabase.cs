@@ -11,13 +11,14 @@ namespace dFakto.States.Workers.Stores.MysqlDbStore
 {
     public class MysqlDbStore : IDbStore
     {
-        private readonly string _name;
         private readonly MysqlConfig _config;
         private readonly ILogger<MysqlDbStore> _logger;
 
+        public string Name { get; }
+        
         public MysqlDbStore(string name, MysqlConfig config, ILogger<MysqlDbStore> logger)
         {
-            _name = name;
+            Name = name;
             _config = config;
             _logger = logger;
         }
@@ -52,5 +53,6 @@ namespace dFakto.States.Workers.Stores.MysqlDbStore
             bulkCopy.DestinationTableName = tableName;
             await bulkCopy.WriteToServerAsync(reader, token);
         }
+
     }
 }

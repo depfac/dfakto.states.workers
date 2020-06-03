@@ -11,13 +11,15 @@ namespace dFakto.States.Workers.Stores.OracleDbStore
 {
     public class OracleDbStore : IDbStore
     {
-        private readonly string _name;
         private readonly OracleConfig _config;
         private readonly ILogger<OracleDbStore> _logger;
 
+
+        public string Name { get; }
+
         public OracleDbStore(string name, OracleConfig config, ILogger<OracleDbStore> logger)
         {
-            _name = name;
+            Name = name;
             _config = config;
             _logger = logger;
         }

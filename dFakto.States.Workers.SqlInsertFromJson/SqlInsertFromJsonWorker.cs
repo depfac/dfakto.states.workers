@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.SqlInsertFromJson
 {
-    public class SqlInsertFromJsonArrayWorkerInput
+    public class SqlInsertFromJsonWorkerInput
     {
         public string ConnectionName { get; set; }
         public string TableName { get; set; }
@@ -22,12 +22,12 @@ namespace dFakto.States.Workers.SqlInsertFromJson
         public Dictionary<string,string> Columns { get; set; }
     }
     
-    public class SqlInsertFromJsonArrayWorker : BaseWorker<SqlInsertFromJsonArrayWorkerInput,string>
+    public class SqlInsertFromJsonWorker : BaseWorker<SqlInsertFromJsonWorkerInput,string>
     {
-        private readonly ILogger<SqlInsertFromJsonArrayWorker> _logger;
+        private readonly ILogger<SqlInsertFromJsonWorker> _logger;
         private readonly IStoreFactory _storeFactory;
 
-        public SqlInsertFromJsonArrayWorker(ILogger<SqlInsertFromJsonArrayWorker> logger, IStoreFactory storeFactory) : base(
+        public SqlInsertFromJsonWorker(ILogger<SqlInsertFromJsonWorker> logger, IStoreFactory storeFactory) : base(
             "sqlInsertFromJson",
             TimeSpan.FromSeconds(30),
             10)
@@ -36,7 +36,7 @@ namespace dFakto.States.Workers.SqlInsertFromJson
             _storeFactory = storeFactory;
         }
 
-        public override async Task<string> DoWorkAsync(SqlInsertFromJsonArrayWorkerInput input, CancellationToken token)
+        public override async Task<string> DoWorkAsync(SqlInsertFromJsonWorkerInput input, CancellationToken token)
         {
             var database = _storeFactory.GetDatabaseStoreFromName(input.ConnectionName);
             if (database == null)
@@ -130,7 +130,7 @@ namespace dFakto.States.Workers.SqlInsertFromJson
             }
         }
 
-        private static string GetInsertQuery(SqlInsertFromJsonArrayWorkerInput input)
+        private static string GetInsertQuery(SqlInsertFromJsonWorkerInput input)
         {
             StringBuilder query = new StringBuilder("INSERT INTO ");
             if (!string.IsNullOrEmpty(input.SchemaName))

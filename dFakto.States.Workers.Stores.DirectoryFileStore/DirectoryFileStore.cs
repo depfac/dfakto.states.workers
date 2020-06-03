@@ -6,20 +6,21 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
 {
     public class DirectoryFileStore : IFileStore
     {
-        private readonly string _fileStoreName;
         public const string TYPE = "file";
         
         private readonly string _basePath;
 
+        public string Name { get; }
+        
         public DirectoryFileStore(string fileStoreName,  DirectoryFileStoreConfig config)
         {
-            _fileStoreName = fileStoreName;
+            Name = fileStoreName;
             _basePath = config.BasePath;
         }
         
         public Task<string> CreateFileToken(string fileName)
         {
-            FileToken token = new FileToken(TYPE,_fileStoreName);
+            FileToken token = new FileToken(TYPE,Name);
             token.Path = fileName;
             
             return Task.FromResult(token.ToString());
@@ -27,23 +28,23 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
 
         public Task<string> GetFileName(string fileToken)
         {
-            var token = FileToken.Parse(fileToken,_fileStoreName);
+            var token = FileToken.Parse(fileToken,Name);
             return Task.FromResult(Path.GetFileName(token.Path));
         }
 
         public async Task<Stream> OpenRead(string fileToken)
         {
-            var token = FileToken.Parse(fileToken,_fileStoreName);
+            var token = FileToken.Parse(fileToken,Name);
             
             if(!await Exists(token))
                 throw new FileNotFoundException();
 
-            return new FileStream(GetAbsolutePath(FileToken.Parse(fileToken, _fileStoreName)), FileMode.Open);
+            return new FileStream(GetAbsolutePath(FileToken.Parse(fileToken, Name)), FileMode.Open);
         }
 
         public Task<Stream> OpenWrite(string token)
         {
-            string localPath = GetAbsolutePath(FileToken.Parse(token, _fileStoreName));
+            string localPath = GetAbsolutePath(FileToken.Parse(token, Name));
             string dir = Path.GetDirectoryName(localPath);
             if (!Directory.Exists(dir))
             {
@@ -55,7 +56,7 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
         
         public Task Delete(string fileToken)
         {
-            var absolutePath = GetAbsolutePath(FileToken.Parse(fileToken, _fileStoreName));
+            var absolutePath = GetAbsolutePath(FileToken.Parse(fileToken, Name));
             if (System.IO.File.Exists(absolutePath))
             {
                 System.IO.File.Delete(absolutePath);
@@ -65,7 +66,7 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
 
         public async Task<bool> Exists(string fileToken)
         {
-            return await Exists(FileToken.Parse(fileToken,_fileStoreName));
+            return await Exists(FileToken.Parse(fileToken,Name));
         }
         
         private Task<bool> Exists(FileToken fileToken)
@@ -81,5 +82,6 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
         public void Dispose()
         {
         }
+
     }
 }

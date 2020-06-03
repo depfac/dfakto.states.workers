@@ -14,12 +14,13 @@ namespace dFakto.States.Workers.Stores.PostgresqlDatabaseStore
 {
     internal class PostgreSqlBbStore : IDbStore
     {
-        private readonly string _name;
         private readonly NpgsqlConfig _config;
+
+        public string Name { get; }
 
         public PostgreSqlBbStore(string name, NpgsqlConfig config)
         {
-            _name = name;
+            Name = name;
             _config = config;
         }
         

@@ -49,7 +49,7 @@ namespace dFakto.States.Workers
             return services;
         }
 
-        public static IServiceCollection AddFileStores(this IServiceCollection services,
+        public static IServiceCollection AddStores(this IServiceCollection services,
             StoreFactoryConfig storeFactoryConfig)
         {
             services.AddSingleton(storeFactoryConfig);

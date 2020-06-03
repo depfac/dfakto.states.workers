@@ -40,7 +40,7 @@ namespace dFakto.States.Workers.BaseHost
         {
             services.AddOptions();
 
-            services.AddFileStores(Configuration.GetSection("fileStores").Get<StoreFactoryConfig>());
+            services.AddStores(Configuration.GetSection("fileStores").Get<StoreFactoryConfig>());
 
             
             ConfigurePlugins(_plugins, services);

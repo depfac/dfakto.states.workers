@@ -36,10 +36,14 @@ namespace dFakto.States.Workers.Tests
                         .AddInMemoryCollection(new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("test:basePath", Path.Combine(Path.GetTempPath(),"utests")),
+                            new KeyValuePair<string, string>("postgresql:ConnectionString", "server=localhost; user id=postgres; password=depfac$2000; database=test"),
+                            new KeyValuePair<string, string>("sqlserver:ConnectionString", "server=localhost; user id=sa; password=depfac$2000; database=test"),
+                            new KeyValuePair<string, string>("mariadb:ConnectionString", "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"),
+                            new KeyValuePair<string, string>("oracle:ConnectionString", "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"),
                         })
                         .Build();
 
-                    services.AddFileStores(new StoreFactoryConfig
+                    services.AddStores(new StoreFactoryConfig
                     {
                         Stores = new[]
                         {
@@ -54,6 +58,30 @@ namespace dFakto.States.Workers.Tests
                                 Name = "testftp",
                                 Type = FtpFileStore.TYPE,
                                 Config = config.GetSection("ftptest")
+                            },
+                            new StoreConfig
+                            {
+                                Name = "pgsql",
+                                Type = "postgresql",
+                                Config = config.GetSection("postgresql")
+                            },
+                            new StoreConfig
+                            {
+                                Name = "oracle",
+                                Type = "oracle",
+                                Config = config.GetSection("oracle")
+                            },
+                            new StoreConfig
+                            {
+                                Name = "sqlserver",
+                                Type = "sqlserver",
+                                Config = config.GetSection("sqlserver")
+                            },
+                            new StoreConfig
+                            {
+                                Name = "mariadb",
+                                Type = "mysql",
+                                Config = config.GetSection("mariadb")
                             }
                         }
                     });
@@ -61,34 +89,6 @@ namespace dFakto.States.Workers.Tests
                     //Load plugins statically
                     services.AddSingleton<IStorePlugin>(new DirectoryStoreStorePlugin());
                     services.AddSingleton<IStorePlugin>(new FtpStoreStorePlugin());
-                    
-                    DatabaseConfig[] configs = 
-                    {
-                        new DatabaseConfig
-                        {
-                            Name = "pgsql",
-                            Type = "dFakto.States.Workers.Sql-old.PostgreSQL.PostgreSqlBaseDatabase, dFakto.States.Workers.Sql-old",
-                            ConnectionString = "server=localhost; user id=postgres; password=depfac$2000; database=test"
-                        },
-                        new DatabaseConfig
-                        {
-                            Name = "sqlserver",
-                            Type = "dFakto.States.Workers.Sql-old.SQLServer.SqlServerBaseDatabase, dFakto.States.Workers.Sql-old",
-                            ConnectionString = "server=localhost; user id=sa; password=depfac$2000; database=test"
-                        },
-                        new DatabaseConfig
-                        {
-                            Name = "mariadb",
-                            Type = "dFakto.States.Workers.Sql-old.MySQL.MySqlDatabase, dFakto.States.Workers.Sql-old",
-                            ConnectionString = "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"
-                        },
-                        new DatabaseConfig
-                        {
-                            Name = "oracle",
-                            Type = "dFakto.States.Workers.Sql-old.Oracle.OracleDatabase, dFakto.States.Workers.Sql-old",
-                            ConnectionString = "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"
-                        },
-                    };
                     
                     services.AddStepFunctions(new StepFunctionsConfig
                     {
@@ -102,7 +102,7 @@ namespace dFakto.States.Workers.Tests
         
         protected void CreateTable(string tableName)
         {
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            foreach (var database in Host.Services.GetServices<IDbStore>())
             {
                 var conn = database.CreateConnection();
                 conn.Open();
@@ -116,7 +116,7 @@ namespace dFakto.States.Workers.Tests
         
         protected void Insert(string tableName, params (int,string)[] values)
         {
-            foreach (var database in Host.Services.GetServices<BaseDatabase>())
+            foreach (var database in Host.Services.GetServices<IDbStore>())
             {
                 foreach (var value in values)
                 {

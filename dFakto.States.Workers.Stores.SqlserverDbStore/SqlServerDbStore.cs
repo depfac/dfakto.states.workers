@@ -12,12 +12,13 @@ namespace dFakto.States.Workers.Stores.SqlserverDbStore
 {
     internal class SqlServerDbStore : IDbStore
     {
-        private readonly string _name;
         private readonly SqlServerConfig _config;
+
+        public string Name { get; }
 
         public SqlServerDbStore(string name, SqlServerConfig config, ILogger<SqlServerDbStore> logger)
         {
-            _name = name;
+            Name = name;
             _config = config;
         }
         

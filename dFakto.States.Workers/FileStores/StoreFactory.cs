@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace dFakto.States.Workers.FileStores
 {
-    public class StoreFactory : IStoreFactory
+    internal class StoreFactory : IStoreFactory
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly StoreFactoryConfig _config;

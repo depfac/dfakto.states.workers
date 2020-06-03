@@ -11,14 +11,15 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
 {
     public class FtpFileStore: IFileStore
     {
-        private readonly string _fileStoreName;
         private readonly FtpFileStoreConfig _config;
         public const string TYPE = "ftp";
         private readonly CoreFtp.FtpClient _client;
-
+        
+        public string Name { get; }
+        
         public FtpFileStore(string fileStoreName, FtpFileStoreConfig config)
         {
-            _fileStoreName = fileStoreName;
+            Name = fileStoreName;
             _config = config;
             _client = new CoreFtp.FtpClient(new FtpClientConfiguration
             {
@@ -33,7 +34,7 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
         {
             var now = DateTime.Now;
             
-            FileToken token = new FileToken(TYPE, _fileStoreName);
+            FileToken token = new FileToken(TYPE, Name);
             token.Path = Path.Combine(now.Year.ToString(), now.Month.ToString("00"), now.Day.ToString("00"),
                 fileName).GetFtpPath();
             return Task.FromResult(token.ToString());
@@ -41,13 +42,13 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
 
         public Task<string> GetFileName(string fileToken)
         {
-            FileToken token = FileToken.Parse(fileToken,_fileStoreName);
+            FileToken token = FileToken.Parse(fileToken,Name);
             return Task.FromResult(token.Path.GetFtpFileName());
         }
 
         public async Task<Stream> OpenRead(string token)
         {
-            var fileToken = FileToken.Parse(token,_fileStoreName);
+            var fileToken = FileToken.Parse(token,Name);
             
             var client = GetNewClient();
             string dir = fileToken.Path.GetFtpDirectoryName();
@@ -62,7 +63,7 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
         public async Task<Stream> OpenWrite(string token)
         {
 
-            var fileToken = FileToken.Parse(token,_fileStoreName);
+            var fileToken = FileToken.Parse(token,Name);
             
             string dir = fileToken.Path.GetFtpDirectoryName();
             var client = GetNewClient();
@@ -77,7 +78,7 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
 
         public async Task Delete(string fileToken)
         {
-            FileToken token = FileToken.Parse(fileToken,_fileStoreName);
+            FileToken token = FileToken.Parse(fileToken,Name);
             using (var client = GetNewClient())
             {
                 if (await client.FileExistsAsync(token.Path))
@@ -89,7 +90,7 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
 
         public async Task<bool> Exists(string fileToken)
         {
-            FileToken token = FileToken.Parse(fileToken,_fileStoreName);
+            FileToken token = FileToken.Parse(fileToken,Name);
 
             using (var c = GetNewClient())
             {
@@ -113,5 +114,6 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
         public void Dispose()
         {
         }
+
     }
 }

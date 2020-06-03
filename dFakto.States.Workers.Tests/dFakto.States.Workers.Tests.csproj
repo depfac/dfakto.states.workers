@@ -17,7 +17,10 @@
     <ItemGroup>
         <ProjectReference Include="..\dFakto.States.Workers.Gzip\dFakto.States.Workers.Gzip.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Http\dFakto.States.Workers.Http.csproj" />
-        <ProjectReference Include="..\dFakto.States.Workers.Sql-old\dFakto.States.Workers.Sql-old.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.SqlBulkInsertWorker\dFakto.States.Workers.SqlBulkInsertWorker.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.SqlInsertFromJson\dFakto.States.Workers.SqlInsertFromJson.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.SqlQuery\dFakto.States.Workers.SqlQuery.csproj" />
+        <ProjectReference Include="..\dFakto.States.Workers.SqlToCsvWorker\dFakto.States.Workers.SqlToCsvWorker.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Stores.DirectoryFileStore\dFakto.States.Workers.Stores.DirectoryFileStore.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers.Stores.FtpFileStore\dFakto.States.Workers.Stores.FtpFileStore.csproj" />
         <ProjectReference Include="..\dFakto.States.Workers\dFakto.States.Workers.csproj" />

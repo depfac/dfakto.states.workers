@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.FileStores;
 using dFakto.States.Workers.Sql;
 using dFakto.States.Workers.Sql.Common;
@@ -29,9 +30,9 @@ namespace dFakto.States.Workers.Tests
         [InlineData("mariadb", "mariadb")]
         public async Task TestBulkInsertFromQuery(string source, string destination)
         {
-            var sql = Host.Services.GetService<SqlBulkInsertWorker>();
-            var src = Host.Services.GetServices<BaseDatabase>().First(x => x.Name == source);
-            var dst = Host.Services.GetServices<BaseDatabase>().First(x => x.Name == destination);
+            var sql = Host.Services.GetService<SqlBulkInsertWorker.SqlBulkInsertWorker>();
+            var src = Host.Services.GetService<IStoreFactory>().GetDatabaseStoreFromName(source);
+            var dst = Host.Services.GetService<IStoreFactory>().GetDatabaseStoreFromName(destination);
 
             string tableSrc = CreateTable(src);
             string tableDst = CreateTable(dst);
@@ -41,13 +42,13 @@ namespace dFakto.States.Workers.Tests
             try
             {
                 var input = new BulkInsertInput();
-                input.Source.ConnectionName = src.Name;
-                input.Source.Query = new SqlQuery
+                input.Source.ConnectionName = source;
+                input.Source.Query = new Abstractions.SqlQuery
                 {
                     Query = $"SELECT * FROM {tableSrc}",
                     Type = SqlQueryType.Reader
                 };
-                input.Destination.ConnectionName = dst.Name;
+                input.Destination.ConnectionName = destination;
                 input.Destination.TableName = tableDst;
                 
                 var result = await sql.DoJsonWork<BulkInsertInput,bool>(input);
@@ -67,8 +68,8 @@ namespace dFakto.States.Workers.Tests
         [InlineData("mariadb")]
         public async Task TestBulkInsertFromCsvFileWithoutHeader(string destination)
         {
-            var fileStore = Host.Services.GetService<StoreFactory>().GetFileStoreFromName("test");
-            var dst = Host.Services.GetServices<BaseDatabase>().First(x => x.Name == destination);
+            var fileStore = Host.Services.GetService<IStoreFactory>().GetFileStoreFromName("test");
+            var dst = Host.Services.GetService<IStoreFactory>().GetDatabaseStoreFromName(destination);
 
             string tableName = CreateTable(dst);
             try
@@ -90,7 +91,7 @@ namespace dFakto.States.Workers.Tests
                 input.Destination.ConnectionName = destination;
                 input.Destination.TableName = tableName;
 
-                var sql = Host.Services.GetService<SqlBulkInsertWorker>();
+                var sql = Host.Services.GetService<SqlBulkInsertWorker.SqlBulkInsertWorker>();
 
                 var result = await sql.DoJsonWork<BulkInsertInput,bool>(input);
 
@@ -109,8 +110,8 @@ namespace dFakto.States.Workers.Tests
         [InlineData("mariadb")]
         public async Task TestBulkInsertFromCsvFileWithHeader(string destination)
         {
-            var fileStore = Host.Services.GetService<StoreFactory>().GetFileStoreFromName("test");
-            var dst = Host.Services.GetServices<BaseDatabase>().First(x => x.Name == destination);
+            var fileStore = Host.Services.GetService<IStoreFactory>().GetFileStoreFromName("test");
+            var dst = Host.Services.GetService<IStoreFactory>().GetDatabaseStoreFromName(destination);
 
             string tableName = CreateTable(dst);
             try
@@ -133,7 +134,7 @@ namespace dFakto.States.Workers.Tests
                 input.Destination.ConnectionName = destination;
                 input.Destination.TableName = tableName;
 
-                var sql = Host.Services.GetService<SqlBulkInsertWorker>();
+                var sql = Host.Services.GetService<SqlBulkInsertWorker.SqlBulkInsertWorker>();
 
                 var result = await sql.DoJsonWork<BulkInsertInput,bool>(input);
 
@@ -145,7 +146,7 @@ namespace dFakto.States.Workers.Tests
                 DropTable(dst,tableName);
             }
         }
-        private string CreateTable(BaseDatabase database)
+        private string CreateTable(IDbStore database)
         {
             var tableName = StringUtils.Random(10);
             using var conn = database.CreateConnection();
@@ -159,7 +160,7 @@ namespace dFakto.States.Workers.Tests
             return tableName;
         }
 
-        private void DropTable(BaseDatabase database, string tableName)
+        private void DropTable(IDbStore database, string tableName)
         {
             using var conn = database.CreateConnection();
             conn.Open();
@@ -168,7 +169,7 @@ namespace dFakto.States.Workers.Tests
             cmd.ExecuteNonQuery();
         }
 
-        private void Insert(BaseDatabase database, string tableName, IEnumerable<(int, string )> values)
+        private void Insert(IDbStore database, string tableName, IEnumerable<(int, string )> values)
         {
             using var conn = database.CreateConnection();
             conn.Open();
@@ -191,7 +192,7 @@ namespace dFakto.States.Workers.Tests
             }
         }
 
-        private int Count(BaseDatabase database, string tableName)
+        private int Count(IDbStore database, string tableName)
         {
             using var conn = database.CreateConnection();
             conn.Open();
