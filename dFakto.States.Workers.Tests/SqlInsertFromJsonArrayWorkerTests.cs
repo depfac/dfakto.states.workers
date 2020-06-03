@@ -21,7 +21,7 @@ namespace dFakto.States.Workers.Tests
         {
             var sql = Host.Services.GetService<SqlInsertFromJsonWorker>();
 
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var tableName = CreateTable(database);
                 

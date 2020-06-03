@@ -60,7 +60,7 @@ namespace dFakto.States.Workers.FileStores
             return GetFileStoreFromName(storeName);
         }
 
-        public IEnumerable<IStore> GetFileStores()
+        public IEnumerable<IStore> GetStores()
         {
             foreach (var fileStoreConfig in _config.Stores)
             {

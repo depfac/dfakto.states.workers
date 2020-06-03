@@ -30,7 +30,7 @@ namespace dFakto.States.Workers.Tests
             Insert(_tableName, (1, "hello"), (2,"world"));
             SqlExportToCsvWorker worker = Host.Services.GetService<SqlExportToCsvWorker>();
 
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore))
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore))
             {
                 var input = new SqlExportToCsvInput
                 {
@@ -58,7 +58,7 @@ namespace dFakto.States.Workers.Tests
             
             SqlExportToCsvWorker worker = Host.Services.GetService<SqlExportToCsvWorker>();
 
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore))
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore))
             {
                 var input = new SqlExportToCsvInput
                 {

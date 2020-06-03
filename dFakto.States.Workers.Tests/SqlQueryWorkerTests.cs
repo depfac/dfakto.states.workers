@@ -28,7 +28,7 @@ namespace dFakto.States.Workers.Tests
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
             
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var input = new SqlQueryInput();
                 input.ConnectionName = database.Name;
@@ -47,7 +47,7 @@ namespace dFakto.States.Workers.Tests
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var input = new SqlQueryInput();
                 input.ConnectionName = database.Name;
@@ -66,7 +66,7 @@ namespace dFakto.States.Workers.Tests
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var input = new SqlQueryInput();
                 input.ConnectionName = database.Name;
@@ -89,7 +89,7 @@ namespace dFakto.States.Workers.Tests
             
             var sql = Host.Services.GetService<SqlQueryWorker>();
 
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var input = new SqlQueryInput();
                 input.ConnectionName = database.Name;
@@ -121,7 +121,7 @@ namespace dFakto.States.Workers.Tests
         
         private void DropTable()
         {
-            foreach (var database in Host.Services.GetService<IStoreFactory>().GetFileStores().Where( x => x is IDbStore).Cast<IDbStore>())
+            foreach (var database in Host.Services.GetService<IStoreFactory>().GetStores().Where( x => x is IDbStore).Cast<IDbStore>())
             {
                 var conn = database.CreateConnection();
                 conn.Open();

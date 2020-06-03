@@ -7,6 +7,6 @@ namespace dFakto.States.Workers.Abstractions
         IDbStore GetDatabaseStoreFromName(string name);
         IFileStore GetFileStoreFromName(string name);
         IFileStore GetFileStoreFromFileToken(string fileToken);
-        IEnumerable<IStore> GetFileStores();
+        IEnumerable<IStore> GetStores();
     }
 }
