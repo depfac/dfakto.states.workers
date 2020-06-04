@@ -1,3 +1,4 @@
+using dFakto.States.Workers.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -5,7 +6,7 @@ using System.Text.Json;
 
 namespace dFakto.States.Workers.Http
 {
-    public class HttpWorkerInput
+    public class HttpWorkerInput : IFileOutput
     {
         public Uri Uri { get; set; }
         public string Method { get; set; } = HttpMethod.Get.Method;
