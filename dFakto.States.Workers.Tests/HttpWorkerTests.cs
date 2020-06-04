@@ -62,7 +62,7 @@ namespace dFakto.States.Workers.Tests
             {
                 Method = "GET",
                 Uri = new Uri("https://postman-echo.com/get?foor=bar"),
-                OutputContentFileName = "test.json",
+                OutputFileName = "test.json",
                 OutputFileStoreName = "test"
             });
 
@@ -120,7 +120,7 @@ namespace dFakto.States.Workers.Tests
                 Uri = new Uri("https://postman-echo.com/post"),
                 ContentFileToken = token,
                 OutputFileStoreName = "test",
-                OutputContentFileName = "test.json"
+                OutputFileName = "test.json"
             });
 
             Assert.Equal(HttpStatusCode.OK,response.StatusCode);
@@ -152,8 +152,8 @@ namespace dFakto.States.Workers.Tests
                 Method = "GET",
                 Uri = new Uri("https://postman-echo.com/headers"),
                 OutputFileStoreName = "test",
-                OutputContentFileName = "test.json",
-                AdditionalHeaders = new Dictionary<string, string>()
+                OutputFileName = "test.json",
+                HttpHeaders = new Dictionary<string, string>()
                 {
                     {"apikey","SECRET_KEY"}
                 }
@@ -163,6 +163,65 @@ namespace dFakto.States.Workers.Tests
             using (var d = JsonDocument.Parse(content))
             {
                 Assert.Equal("SECRET_KEY",d.RootElement.GetProperty("headers").GetProperty("apikey").ToString());
+            }
+        }
+        
+                
+        [Fact]
+        public async Task TestAdditionalQueryStringParameters()
+        {
+            HttpWorker worker = Host.Services.GetService<HttpWorker>();
+            var response = await worker.DoJsonWork<HttpWorkerInput,HttpWorkerOutput>(new HttpWorkerInput
+            {
+                Method = "GET",
+                Uri = new Uri("https://postman-echo.com/get"),
+                OutputFileStoreName = "test",
+                OutputFileName = "test.json",
+                HttpQueryParams = new Dictionary<string, string>()
+                {
+                    {"testp1","val1"},
+                    {"testp2","val2"}
+                },
+                HttpHeaders = new Dictionary<string, string>()
+                {
+                    {"apikey","SECRET_KEY"}
+                }
+            });
+            
+            var content = GetFileTokenContent(response.ContentFileToken);
+            using (var d = JsonDocument.Parse(content))
+            {
+                Assert.Equal("val1",d.RootElement.GetProperty("args").GetProperty("testp1").ToString());
+                Assert.Equal("val2",d.RootElement.GetProperty("args").GetProperty("testp2").ToString());
+            }
+        }
+        
+                        
+        [Fact]
+        public async Task TestAddAdditionalQueryStringParameters()
+        {
+            HttpWorker worker = Host.Services.GetService<HttpWorker>();
+            var response = await worker.DoJsonWork<HttpWorkerInput,HttpWorkerOutput>(new HttpWorkerInput
+            {
+                Method = "GET",
+                Uri = new Uri("https://postman-echo.com/get?testp1=val1"),
+                OutputFileStoreName = "test",
+                OutputFileName = "test.json",
+                HttpQueryParams = new Dictionary<string, string>()
+                {
+                    {"testp2","val2"}
+                },
+                HttpHeaders = new Dictionary<string, string>()
+                {
+                    {"apikey","SECRET_KEY"}
+                }
+            });
+            
+            var content = GetFileTokenContent(response.ContentFileToken);
+            using (var d = JsonDocument.Parse(content))
+            {
+                Assert.Equal("val1",d.RootElement.GetProperty("args").GetProperty("testp1").ToString());
+                Assert.Equal("val2",d.RootElement.GetProperty("args").GetProperty("testp2").ToString());
             }
         }
     }
