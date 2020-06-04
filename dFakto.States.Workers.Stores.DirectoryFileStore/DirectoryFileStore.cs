@@ -22,8 +22,7 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
         public Task<string> CreateFileToken(string fileName)
         {
             FileToken token = new FileToken(TYPE,Name);
-            token.Path = fileName;
-            
+            token.SetPath(fileName);
             return Task.FromResult(token.ToString());
         }
 

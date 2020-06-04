@@ -1,9 +1,35 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace dFakto.States.Workers.Abstractions
 {
     public class FileToken
     {
+        public static readonly char[] DirectorySeparator = new[] { '/' , '\\' };
+
+        public const string Year = "#YEAR#";
+        public const string Month = "#MONTH#";
+        public const string Day = "#DAY#";
+        public const string Hour = "#HOUR#";
+        public const string Minute = "#MINUTE#";
+        public const string Second = "#SECOND#";
+        public const string Timestamp = "#TIMESTAMP#";
+        public const string Environment = "#ENVIRONMENT#";
+
+        private static readonly IDictionary<string, Func<string>> PathTransformations =
+            new Dictionary<string, Func<string>>
+            {
+                { Year, () => DateTime.Today.Year.ToString()},
+                { Month, () => DateTime.Today.Month.ToString()},
+                { Day, () => DateTime.Today.Day.ToString()},
+                { Hour, () => DateTime.Now.Hour.ToString()},
+                { Minute, () => DateTime.Now.Minute.ToString()},
+                { Minute, () => DateTime.Now.Second.ToString()},
+                { Timestamp, () => DateTime.Now.ToString("O")},
+                { Environment, () => System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}
+            };
+
         private readonly UriBuilder _builder;
 
         public FileToken(string stringToken)
@@ -33,7 +59,20 @@ namespace dFakto.States.Workers.Abstractions
         public string Path
         {
             get => _builder.Path.Substring(1);
-            set => _builder.Path = value;
+            private set => _builder.Path = value;
+        }
+
+        public void SetPath(string path, Func<string, string> transformation = null)
+        {
+            string newPath = System.IO.Path.Combine(
+                path.Split(DirectorySeparator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => PathTransformations.ContainsKey(x) ? PathTransformations[x]() : x)
+                .ToArray());
+            if(transformation != null)
+            {
+                newPath = transformation(newPath);
+            }
+            _builder.Path = newPath;
         }
 
         public override string ToString()

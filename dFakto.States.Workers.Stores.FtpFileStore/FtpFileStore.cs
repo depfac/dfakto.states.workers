@@ -33,11 +33,8 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
 
         public Task<string> CreateFileToken(string fileName)
         {
-            var now = DateTime.Now;
-            
             FileToken token = new FileToken(TYPE, Name);
-            token.Path = Path.Combine(now.Year.ToString(), now.Month.ToString("00"), now.Day.ToString("00"),
-                fileName).GetFtpPath();
+            token.SetPath(fileName, x => x.GetFtpPath());
             return Task.FromResult(token.ToString());
         }
 
