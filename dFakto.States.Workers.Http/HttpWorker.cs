@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Abstractions.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -28,9 +29,7 @@ namespace dFakto.States.Workers.Http
         }
 
         public override async Task<HttpWorkerOutput> DoWorkAsync(HttpWorkerInput workerInput, CancellationToken token)
-        {
-            _logger.LogInformation($"{workerInput.Method}:{workerInput.Uri}");
-            
+        {   
             using (HttpClient client = new HttpClient())
             {
                 client.Timeout = TimeSpan.FromMinutes(workerInput.Timeout);
@@ -84,29 +83,44 @@ namespace dFakto.States.Workers.Http
             }
         }
 
-        private static HttpRequestMessage CreateHttpRequest(HttpWorkerInput workerInput, HttpContent requestContent)
+        private HttpRequestMessage CreateHttpRequest(HttpWorkerInput workerInput, HttpContent requestContent)
         {
+            UriBuilder builder = new UriBuilder(workerInput.Uri);
+            if (workerInput.HttpQueryParams?.Count > 0)
+            {
+                var q = string.Join("&",workerInput.HttpQueryParams.Select(x =>
+                    $"{HttpUtility.UrlEncode(x.Key)}={HttpUtility.UrlEncode(x.Value)}"));
+
+                if (builder.Query.Length > 0)
+                {
+                    builder.Query += "&";
+                }
+
+                builder.Query += q;
+            }
+            
             var request =  new HttpRequestMessage
             {
-                RequestUri = workerInput.Uri,
+                RequestUri = builder.Uri,
                 Method = new HttpMethod(workerInput.Method),
                 Content = requestContent,
             };
-
-            if (workerInput.AdditionalHeaders != null)
+            
+            if (workerInput.HttpHeaders != null)
             {
-                foreach (var header in workerInput.AdditionalHeaders)
+                foreach (var header in workerInput.HttpHeaders)
                 {
                     request.Headers.Add(header.Key,header.Value);
                 }
             }
 
+            _logger.LogInformation($"{workerInput.Method}:{workerInput.Uri}");
             return request;
         }
 
         private static string GetOutputFileName(HttpWorkerInput workerInput, HttpResponseMessage response)
         {
-            string outputFileName = workerInput.OutputContentFileName ??
+            string outputFileName = workerInput.OutputFileName ??
                                     response.Content.Headers.ContentDisposition?.FileName ??
                                     workerInput.Uri.Segments.Last();
             if (outputFileName.EndsWith("/"))

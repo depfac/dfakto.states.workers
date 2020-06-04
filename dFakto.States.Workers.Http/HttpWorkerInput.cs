@@ -11,11 +11,12 @@ namespace dFakto.States.Workers.Http
         public string Method { get; set; } = HttpMethod.Get.Method;
         public JsonElement? JsonContent { get; set; }
         public string ContentFileToken { get; set; }
-        public string OutputContentFileName { get; set; }
+        public string OutputFileName { get; set; }
         public string OutputFileStoreName { get; set; }
         public int Timeout { get; set; } = 60;
         public bool FailIfError { get; set; } = true;
         
-        public Dictionary<string,string> AdditionalHeaders { get; set; }
+        public Dictionary<string,string> HttpHeaders { get; set; }
+        public Dictionary<string,string> HttpQueryParams { get; set; }
     }
 }
