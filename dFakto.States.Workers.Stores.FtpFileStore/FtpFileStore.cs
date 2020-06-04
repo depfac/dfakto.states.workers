@@ -9,6 +9,7 @@ using FtpClient = FluentFTP.FtpClient;
 
 namespace dFakto.States.Workers.Stores.FtpFileStore
 {
+    // TODO: weird usage of 2 FTP libraries + sometimes we use a new client and sometims we use a "global" client
     public class FtpFileStore: IFileStore
     {
         private readonly FtpFileStoreConfig _config;
@@ -113,7 +114,16 @@ namespace dFakto.States.Workers.Stores.FtpFileStore
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _client?.Dispose();
+            }
+        }
     }
 }

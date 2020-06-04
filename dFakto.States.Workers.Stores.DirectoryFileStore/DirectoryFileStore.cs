@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
@@ -57,9 +58,9 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
         public Task Delete(string fileToken)
         {
             var absolutePath = GetAbsolutePath(FileToken.Parse(fileToken, Name));
-            if (System.IO.File.Exists(absolutePath))
+            if (File.Exists(absolutePath))
             {
-                System.IO.File.Delete(absolutePath);
+                File.Delete(absolutePath);
             }
             return Task.CompletedTask;
         }
@@ -71,7 +72,7 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
         
         private Task<bool> Exists(FileToken fileToken)
         {
-            return Task.FromResult(System.IO.File.Exists(GetAbsolutePath(fileToken)));
+            return Task.FromResult(File.Exists(GetAbsolutePath(fileToken)));
         }
 
         private string GetAbsolutePath(FileToken token)
@@ -81,7 +82,12 @@ namespace dFakto.States.Workers.Stores.DirectoryFileStore
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+        }
     }
 }
