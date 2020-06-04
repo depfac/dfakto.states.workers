@@ -1,6 +1,8 @@
+using dFakto.States.Workers.Abstractions;
+
 namespace dFakto.States.Workers.Gzip
 {
-    public class GZipInput
+    public class GZipInput : IFileOutput
     {
         public string FileToken { get; set; }
         public bool DeleteSource { get; set; }
