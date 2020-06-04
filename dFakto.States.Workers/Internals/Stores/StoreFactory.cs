@@ -21,7 +21,7 @@ namespace dFakto.States.Workers.Stores
 
         private IStore GetStoreFromName(string name)
         {
-            var fileStoreConfig = _config.Stores.First(x =>
+            var fileStoreConfig = _config.Stores.FirstOrDefault(x =>
                 string.Compare(x.Name, name, StringComparison.CurrentCultureIgnoreCase) == 0);
             
             if(fileStoreConfig == null)

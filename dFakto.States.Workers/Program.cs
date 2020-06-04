@@ -1,80 +1,62 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using dFakto.States.Workers.BaseHost;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 
-namespace dFakto.States.Workers.TestsHost
+namespace dFakto.States.Workers
 {
-    internal static class Program
+    public class Program
     {
-        private static int Main(string[] args)
+        public static int Main(string[] args)
         {
             AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
 
             bool isService = !(Debugger.IsAttached || (args != null && args.Contains("--console")));
+            
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
+            
+            
+            var builder = CreateHostBuilder(args);
+            
             if (isService)
             {
+                Log.Information("Starting as windows service");
+                
                 string pathToExe = Process.GetCurrentProcess().MainModule?.FileName;
                 string pathToContentRoot = Path.GetDirectoryName(pathToExe);
                 Directory.SetCurrentDirectory(pathToContentRoot);
+                
+                
+                builder.UseWindowsService();
             }
-
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-            IConfigurationBuilder configBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true)
-                .AddJsonFile($"appsettings.{environment}.json", true)
-                .AddEnvironmentVariables();
-            if (args != null)
+            else
             {
-                configBuilder.AddCommandLine(args.Where(arg => arg != "--console").ToArray());
+                Log.Information("Starting as console application");
+                builder.UseConsoleLifetime();
             }
-            IConfiguration config = configBuilder.Build();
-
-            var logConfig = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .ReadFrom.Configuration(config)
-                .Enrich.FromLogContext();
-            if(!isService)
-            {
-                logConfig.WriteTo.Console(new MessageTemplateTextFormatter(
-                    "{Timestamp:u} [{Level:u3}]: {SourceContext} - {Message}{NewLine}{Exception}", null));
-            }
-            Log.Logger = logConfig.CreateLogger();
-
-            IWebHostBuilder builder = 
-                WebHost.CreateDefaultBuilder(args)
-                    .UseConfiguration(config)
-                    .UseSerilog()
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseSentry()
-                    .UseStartup<Startup>();
-
+            
             try
             {
-                IWebHost host = builder.Build();
-                if (isService)
-                {
-                    host.RunAsService();
-                }
-                else
-                {
-                    host.Run();
-                }
+                builder.Build().Run();
                 return 0;
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host terminated unexpectedly");
+                Log.Fatal(ex, "Application start-up failed");
                 return 1;
             }
             finally
@@ -82,5 +64,14 @@ namespace dFakto.States.Workers.TestsHost
                 Log.CloseAndFlush();
             }
         }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseSentry();
+                    webBuilder.UseSerilog();
+                    webBuilder.UseStartup<Startup>();
+                });
     }
 }

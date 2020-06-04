@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace dFakto.States.Workers.Stores.SqlserverDbStore
 {
-    internal class SqlServerDbStore : IDbStore
+    public class SqlServerDbStore : IDbStore
     {
         private readonly SqlServerConfig _config;
 

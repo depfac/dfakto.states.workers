@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using dFakto.States.Workers.Abstractions;
-using dFakto.States.Workers.Config;
 using dFakto.States.Workers.Gzip;
 using dFakto.States.Workers.Stores.DirectoryFileStore;
 using dFakto.States.Workers.Stores.FtpFileStore;
@@ -43,60 +42,15 @@ namespace dFakto.States.Workers.Tests
                         .AddInMemoryCollection(new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("test:basePath", Path.Combine(Path.GetTempPath(),"utests")),
-                            new KeyValuePair<string, string>("postgresql:ConnectionString", "server=localhost; user id=postgres; password=depfac$2000; database=test"),
-                            new KeyValuePair<string, string>("sqlserver:ConnectionString", "server=localhost; user id=sa; password=depfac$2000; database=test"),
-                            new KeyValuePair<string, string>("mariadb:ConnectionString", "server=localhost; user id=root; password=depfac$2000; database=test; AllowLoadLocalInfile=true"),
-                            new KeyValuePair<string, string>("oracle:ConnectionString", "User Id=root; Password=depfac$2000; Data Source=localhost:1521/orc1"),
                         })
                         .Build();
 
-                    services.AddStores(new StoreFactoryConfig
-                    {
-                        Stores = new[]
-                        {
-                            new StoreConfig
-                            {
-                                Name = "test",
-                                Type = DirectoryFileStore.TYPE,
-                                Config = config.GetSection("test")
-                            },
-                            // new StoreConfig
-                            // {
-                            //     Name = "testftp",
-                            //     Type = FtpFileStore.TYPE,
-                            //     Config = config.GetSection("ftptest")
-                            // },
-                            new StoreConfig
-                            {
-                                Name = "pgsql",
-                                Type = "postgresql",
-                                Config = config.GetSection("postgresql")
-                            },
-                            // new StoreConfig
-                            // {
-                            //     Name = "oracle",
-                            //     Type = "oracle",
-                            //     Config = config.GetSection("oracle")
-                            // },
-                            new StoreConfig
-                            {
-                                Name = "sqlserver",
-                                Type = "sqlserver",
-                                Config = config.GetSection("sqlserver")
-                            },
-                            new StoreConfig
-                            {
-                                Name = "mariadb",
-                                Type = "mysql",
-                                Config = config.GetSection("mariadb")
-                            }
-                        }
-                    });
-
+                    services.AddSingleton<IStoreFactory, TestStoreFactory>();
+                    
                     //Load plugins statically
                     services.AddSingleton<IStorePlugin>(new DirectoryStoreStorePlugin());
                     services.AddSingleton<IStorePlugin>(new FtpStoreStorePlugin());
-                    services.AddSingleton<IStorePlugin>(new PostgreSqlBbStorePlugin());
+                    services.AddSingleton<IStorePlugin>(new PostgresqlDbStorePlugin());
                     services.AddSingleton<IStorePlugin>(new OracleDbStorePlugin());
                     services.AddSingleton<IStorePlugin>(new SqlServerDbStorePlugin());
                     services.AddSingleton<IStorePlugin>(new MysqlDbStorePlugin());
@@ -108,12 +62,6 @@ namespace dFakto.States.Workers.Tests
                     services.AddTransient<SqlQueryWorker>();
                     services.AddTransient<SqlToCsv.SqlExportToCsvWorker>();
                     services.AddTransient<SqlInsertFromJson.SqlInsertFromJsonWorker>();
-                    
-                    services.AddStepFunctions(new StepFunctionsConfig
-                    {
-                        AuthenticationKey = "KEY",
-                        AuthenticationSecret = "SECRET"
-                    });
                 });
 
             return builder.Build();

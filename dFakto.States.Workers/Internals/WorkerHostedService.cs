@@ -40,6 +40,8 @@ namespace dFakto.States.Workers.Internals
 
         protected override async Task ExecuteAsync(CancellationToken token)
         {
+            _logger.LogInformation($"Starting '{Worker.ActivityName}' Worker");
+            
             var activityName =
                 !string.IsNullOrEmpty(Config.EnvironmentName)
                     ? Config.EnvironmentName + "-" + Worker.ActivityName
