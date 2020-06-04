@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Amazon.StepFunctions;
 using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Config;
