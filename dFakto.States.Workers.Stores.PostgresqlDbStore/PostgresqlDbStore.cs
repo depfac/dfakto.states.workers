@@ -12,13 +12,13 @@ using NpgsqlTypes;
 
 namespace dFakto.States.Workers.Stores.PostgresqlDatabaseStore
 {
-    internal class PostgreSqlBbStore : IDbStore
+    public class PostgresqlDbStore : IDbStore
     {
         private readonly NpgsqlConfig _config;
 
         public string Name { get; }
 
-        public PostgreSqlBbStore(string name, NpgsqlConfig config)
+        public PostgresqlDbStore(string name, NpgsqlConfig config)
         {
             Name = name;
             _config = config;
