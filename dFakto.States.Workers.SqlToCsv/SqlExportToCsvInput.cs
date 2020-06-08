@@ -1,8 +1,9 @@
+using dFakto.States.Workers.Abstractions;
 using dFakto.States.Workers.Abstractions.Sql;
 
 namespace dFakto.States.Workers.SqlToCsv
 {
-    public class SqlExportToCsvInput: SqlQuery
+    public class SqlExportToCsvInput: SqlQuery, IFileOutput
     {
         public string ConnectionName { get; set; }
         public string OutputFileStoreName { get; set; }
